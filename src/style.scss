@@ -1,26 +1,126 @@
 #eleboi {
-  height: 200px;
-  width: 400px;
-  filter: none;
-  border: black 5px solid;
-  transition: filter 0.10s;
-}
-#eleboi:hover {
-  filter: brightness(320%);
-}
-#eleboi:active {
-  filter: brightness(90%);
-}
-#ele {
-  font-size: 2em;
-  font-weight: 900;
+	width: 400px;
+	filter: brightness(150%);
+	border: black 5px solid;
+	transition: filter 0.1s;
 
+	&:hover {
+		filter: brightness(260%) contrast(250%);
+	}
+
+	&:active {
+		filter: brightness(100%) contrast(250%);
+	}
 }
+
+#ele {
+	font-size: 2em;
+	font-weight: 900;
+}
+
+img {
+	-webkit-user-drag: none;
+}
+
 :root {
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  background-image: linear-gradient(#99f, #337)
+	font-family: Arial, Helvetica, sans-serif;
+	background-image: linear-gradient(#99f, #337);
 }
+
 #bois {
-  font-size: 1.6em;
+	font-size: 1.6em;
+	margin-bottom: 3px;
+}
+
+#smallbois {
+	font-size: 1em;
+	margin-top: 3px;
+}
+
+#content {
+	margin-left: 20px;
+}
+
+#upgrades {
+	border: black 5px solid;
+	width: 400px;
+	height: 400px;
+	overflow-y: auto;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	text-align: center;
+	background-image: linear-gradient(#4f4, #484);
+
+	p {
+		text-align: center;
+		font-weight: 900;
+		font-size: 2em;
+		margin: 5px;
+	}
+
+
+	.appliance {
+		justify-content: center;
+		align-items: center;
+		display: flex;
+
+		.count {
+			font-size: 3em;
+		}
+
+		.labels {
+			margin-right: 10px;
+			margin-left: 10px;
+			display: inline-block;
+
+			.label {
+				font-size: 2em;
+				font-weight: bold;
+			}
+
+			.desc {
+				font-size: 1em;
+				font-weight: normal;
+			}
+
+
+			.cost {
+				&::before {
+					content: "Costs ";
+					font-weight: normal;
+				}
+
+				font-weight: bold;
+
+				&::after {
+					content: " Electric Bois";
+					font-weight: normal;
+				}
+			}
+		}
+
+		.buy {
+			display: inline-block;
+			cursor: pointer;
+			padding: 10px;
+			background-image: linear-gradient(#ee4, #aa2);
+			border: #242 5px solid;
+			font-size: 2.2em;
+			font-weight: bolder;
+
+			&:hover {
+				background-image: linear-gradient(#cc4, #882);
+			}
+
+			&:active {
+				background-image: linear-gradient(#aa4, #552);
+			}
+
+			&:focus {
+				outline: 0;
+			}
+		}
+	}
+
 }
