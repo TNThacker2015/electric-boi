@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
-window.onload = async () => {
+window.addEventListener("load", async () => {
 	
 const defaults: Partial<Store> = {
 	electric: BigInt(0)
@@ -31,7 +31,7 @@ const store = new Proxy(Object.create(null) as Store, {
 });
 const appliances = new Proxy(Object.create(null) as Appliances, {
 	get(t, k) {
-		return store.appliances[k as keyof Appliances] ?? 0;
+		return store.appliances[k as keyof Appliances] || 0;
 	},
 	set(t, k, v) {
 		const app = store.appliances;
@@ -124,7 +124,7 @@ console.log(appliances)
 		apps[name] = {
 			get cost() {
 				return (
-					applianceCosts[name] ?? (applianceCosts[name] = baseCost)
+					applianceCosts[name] || (applianceCosts[name] = baseCost)
 				);
 			},
 			set cost(cost) {
@@ -156,8 +156,8 @@ console.log(appliances)
 		for (const r of Object.values(apps))
 			r!.elem.innerText = String(r!.cost);
 		for (const [f, r] of Object.entries(apps))
-			r!.countElem.innerText = String(appliances[f as keyof Appliances] ?? 0);
+			r!.countElem.innerText = String(appliances[f as keyof Appliances] || 0);
 	});
 	setTimeout(() => store.electric || Swal.fire("Click!", "Click the electric boi gif to gain electric bois!", "info"), 8000)
-	setInterval(() => (store.electric += BigInt(appliances.computer)), 2000);
-};
+	// setInterval(() => (store.electric += BigInt(appliances.computer)), 2000);
+});
