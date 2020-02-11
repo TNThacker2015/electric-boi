@@ -131,7 +131,7 @@ console.log(appliances)
 		buy.innerText = "BUY";
 		buy.onclick = () => {
 			const obj = apps[name]!;
-			onclick?.(obj);
+			onclick && onclick(obj);
 			if (store.electric < obj.cost) return Swal.fire("Not Enough Electric Bois", "You do not have enough electric bois to buy this.", "error");
 			else {
 				appliances[name] += 1;
@@ -188,4 +188,4 @@ console.log(appliances)
 		store.electric += BigInt(appliances.microchip + 1);
 	});
 };
-setTimeout(() => window.onload?.({} as any), 5000)
+setTimeout(() => window.onload!({} as any), 5000)
