@@ -188,4 +188,4 @@ console.log(appliances)
 		store.electric += BigInt(appliances.microchip + 1);
 	});
 };
-setTimeout(() => window.onload!({} as any), 5000)
+setTimeout(() => window.onload!({} as any), 3000)
