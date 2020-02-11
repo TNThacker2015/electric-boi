@@ -3,8 +3,10 @@ import Swal from "sweetalert2";
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
-window.addEventListener("load", async () => {
-	
+let done = false;
+window.onload = async () => {
+	if (done) return;
+done = true;
 const defaults: Partial<Store> = {
 	electric: BigInt(0)
 };
@@ -45,7 +47,9 @@ console.log(appliances)
 	const bois = document.getElementById("bois");
 	const smallBois = document.getElementById("smallbois");
 	const upgrades = document.getElementById("upgrades");
-	if (!(electricboi && bois && smallBois && upgrades))
+	const cps = document.getElementById("cps");
+	const cpc = document.getElementById("cpc");
+	if (!(electricboi && bois && smallBois && upgrades && cps && cpc))
 		return (document.body.innerHTML = "err");
 	type ApplianceCosts = {
 		[e in keyof Partial<Appliances>]: bigint;
@@ -58,6 +62,7 @@ console.log(appliances)
 	
 	interface Appliances {
 		computer: number;
+		microchip: number;
 	}
 	if (!store.appliances) store.appliances = {};
 	if (!store.applianceCosts) store.applianceCosts = {};
@@ -82,14 +87,13 @@ console.log(appliances)
 		bois.innerText = `Electric Bois: ${store.electric}`;
 		smallBois.innerText = toWords(store.electric);
 	});
-	electricboi.addEventListener("click", () => {
-		store.electric += BigInt(1);
-	});
 	const apps: {
 		[e in keyof Partial<Appliances>]: {
 			cost: bigint;
 			elem: HTMLParagraphElement;
 			countElem: HTMLParagraphElement;
+			appElem: HTMLDivElement;
+			buyElem: HTMLButtonElement;
 		};
 	} = {};
 	const addAppliance = (
@@ -97,7 +101,8 @@ console.log(appliances)
 		display: string,
 		desc: string,
 		baseCost = BigInt(10),
-		costMult: number | bigint | ((arg: bigint) => number | bigint)
+		costMult: number | bigint | ((arg: bigint) => number | bigint),
+		onclick?: (e: typeof apps[keyof typeof apps]) => any
 	) => {
 		const app = document.createElement("div");
 		app.classList.add("appliance");
@@ -121,23 +126,12 @@ console.log(appliances)
 		c.classList.add("cost");
 		c.innerText = String(baseCost);
 		f.append(c);
-		apps[name] = {
-			get cost() {
-				return (
-					applianceCosts[name] || (applianceCosts[name] = baseCost)
-				);
-			},
-			set cost(cost) {
-				applianceCosts[name] = cost;
-			},
-			elem: c,
-			countElem: r
-		};
-		const obj = apps[name]!;
 		const buy = document.createElement("button");
 		buy.classList.add("buy");
 		buy.innerText = "BUY";
 		buy.onclick = () => {
+			const obj = apps[name]!;
+			onclick?.(obj);
 			if (store.electric < obj.cost) return Swal.fire("Not Enough Electric Bois", "You do not have enough electric bois to buy this.", "error");
 			else {
 				appliances[name] += 1;
@@ -150,8 +144,23 @@ console.log(appliances)
 		};
 		app.append(buy);
 		upgrades.append(app);
+		apps[name] = {
+			get cost() {
+				return (
+					applianceCosts[name] || (applianceCosts[name] = baseCost)
+				);
+			},
+			set cost(cost) {
+				applianceCosts[name] = cost;
+			},
+			elem: c,
+			countElem: r,
+			appElem: app,
+			buyElem: buy,
+		};
 	};
 	addAppliance("computer", "Computer", "+0.5 CPS", BigInt(100), 1.55);
+	addAppliance("microchip", "Microchip", "+1 Per Click", BigInt(150), 2);
 	setInterval(() => {
 		for (const r of Object.values(apps))
 			r!.elem.innerText = String(r!.cost);
@@ -159,5 +168,24 @@ console.log(appliances)
 			r!.countElem.innerText = String(appliances[f as keyof Appliances] || 0);
 	});
 	setTimeout(() => store.electric || Swal.fire("Click!", "Click the electric boi gif to gain electric bois!", "info"), 8000)
-	// setInterval(() => (store.electric += BigInt(appliances.computer)), 2000);
-});
+	setInterval(() => (store.electric += BigInt(appliances.computer)), 2000);
+	setInterval(() => {
+		cps.innerText = String(appliances.computer / 2)
+		cpc.innerText = String(appliances.microchip + 1)
+	})
+	setInterval(() => {
+		for (const [k, v] of Object.entries(apps)) {
+			if (store.electric < v!.cost) {
+				v!.appElem.style.backgroundColor = "#9338"
+				v!.buyElem.style.backgroundImage = "linear-gradient(#c52, #831)"
+			} else {
+					v!.appElem.style.backgroundColor = "#6f28"
+					v!.buyElem.style.backgroundImage = ""
+			};
+		}
+	})
+	electricboi.addEventListener("click", () => {
+		store.electric += BigInt(appliances.microchip + 1);
+	});
+};
+setTimeout(() => window.onload?.({} as any), 5000)

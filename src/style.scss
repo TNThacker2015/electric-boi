@@ -50,7 +50,7 @@ img {
 	top: 20px;
 	right: 20px;
 	text-align: center;
-	background-image: linear-gradient(#4f4, #484);
+	background-image: linear-gradient(#4d4, #464);
 
 	p {
 		text-align: center;
@@ -123,4 +123,30 @@ img {
 		}
 	}
 
+}
+
+#boicontainer {
+	p {
+		margin: 5px;
+	}
+
+	#cps {
+		&::after {
+			content: " Clicks per Second";
+			font-weight: normal;
+		}
+
+		font-weight: 900;
+	}
+
+	#cpc {
+		&::after {
+			content: " Electric Bois per Click";
+			font-weight: normal;
+		}
+
+		font-weight: 900;
+	}
+
+	margin-bottom: 15px;
 }
