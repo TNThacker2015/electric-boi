@@ -8,7 +8,7 @@ const entries = Object.entries as <T>(
 let addIntervals = true;
 let last = Date.now();
 localStorage.openpages = Date.now();
-throw "lol get yeeted"
+// throw "lol get yeeted"
 window.addEventListener(
 	"storage",
 	e => {
