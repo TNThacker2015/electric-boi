@@ -76,15 +76,43 @@ const vigints = [
 	"sexagint",
 	"septuagint",
 	"octogint",
-	"nonagint"
+	"nonagint",
+	"cent",
+	"decicent",
+	"viginticent",
+	"trigintacent",
+	"quadragintacent",
+	"quinquagintacent",
+	"sexagintacent",
+	"septuagintacent",
+	"octogintacent",
+	"nonagintacent"
 ];
-export const toWords = (num: bigint) => {
+const bigPrefix = [
+	"",
+	"deci",
+	"viginti",
+	"triginta",
+	"quadraginta",
+	"quinquaginta",
+	"sexaginta",
+	"septuaginta",
+	"octoginta",
+	"nonaginta"
+];
+const bigbois = [
+	"ducent",
+	"trecent",
+	"quadringent",
+	"quingent",
+	"sescent",
+	"septingent",
+	"octingent",
+	"nongent"
+];
+export const toWords = (num: bigint): string => {
 	// if (num <= 20) return under20[Number(num)];
-	const ones = Number(num % f(10));
-	const tens = Number((num - f(ones)) / f(10)) % 10;
-	const hundreds = Number((num - f(tens)) / f(100));
-	if (num < 1000)
-		return num.toString();
+	if (num < 1000) return num.toString();
 	if (num < 1000000) return `${(Number(num) / 1000).toFixed(3)} thousand`;
 	for (const [index, high] of higher.entries()) {
 		const m = f(10) ** ((f(index) + f(2)) * f(3));
@@ -92,9 +120,21 @@ export const toWords = (num: bigint) => {
 	}
 	for (const [index, h] of vigints.entries()) {
 		for (const [i, p] of highestPrefixes.entries()) {
-			const m = f(10) ** ((f((index * 10) + i) + f(21)) * f(3));
+			const m = f(10) ** ((f(index * 10 + i) + f(21)) * f(3));
 			if (num < m * f(1000)) return `${num / m} ${p}${h}illion`;
 		}
 	}
-	return Number(num).toExponential();
+	for (const [index, h] of bigbois.entries()) {
+		for (const [i, p] of bigPrefix.entries()) {
+			for (const [j, s] of highestPrefixes.entries()) {
+				const m = f(10) ** ((f(index * 100 + i * 10 + j) + f(201)) * f(3));
+				if (num < m * f(1000)) return `${num / m} ${s}${p}${h}illion`;
+			}
+		}
+	}
+	if (num < f(10)**f(3006)) return `${num / f(10)**f(3003)} millillion`;
+	const str = toWords(f(10) ** (f(num.toString().length - 1) - f(3000)));
+	const li = str.lastIndexOf(" ");
+	return `${str.substring(0, li)} milli${str.substring(li + 1)}`
+	return `1e+${num.toString().length - 1}`;
 };

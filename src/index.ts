@@ -67,6 +67,7 @@ window.onload = async () => {
 		supercomputer: number;
 		processor: number;
 		graphics: number;
+		cpu: number;
 	}
 	if (!store.appliances) store.appliances = {};
 	if (!store.applianceCosts) store.applianceCosts = {};
@@ -88,7 +89,7 @@ window.onload = async () => {
 			store[k as keyof Store] === undefined &&
 			(store[k as keyof Store] = v as any);
 	setInterval(() => {
-		bois.innerText = `Electric Bois: ${store.electric}`;
+		bois.innerText = `Electric Bois: ${store.electric < q(10000000000) ? store.electric : `${store.electric / q(10)**q(store.electric.toString().length -1)}e+${store.electric.toString().length - 1}`}`;
 		smallBois.innerText = toWords(store.electric);
 	});
 	const apps: {
@@ -171,7 +172,7 @@ window.onload = async () => {
 		};
 	};
 	addAppliance("computer", "Computer", "+0.5 CPS", q(100), x => x + q(100));
-	addAppliance("microchip", "Microchip", "+1 Per Click", q(150), 1.55);
+	addAppliance("microchip", "Microchip", "+1 Per Click", q(150), 1.25);
 	addAppliance(
 		"supercomputer",
 		"Supercomputer",
@@ -179,13 +180,20 @@ window.onload = async () => {
 		q(250),
 		x => x + q(200)
 	);
-	addAppliance("processor", "Processor", "+4 Per Click", q(800), 1.35);
+	addAppliance("processor", "Processor", "+4 Per Click", q(800), 1.15);
 	addAppliance(
 		"graphics",
 		"Graphics Card",
 		"+10 CPS",
 		q(1000),
 		x => x + q(550)
+	);
+	addAppliance(
+		"cpu",
+		"CPU",
+		"+100 CPS",
+		q(20000),
+		x => x + q(11550)
 	);
 	setInterval(() => {
 		for (const r of Object.values(apps))
@@ -215,6 +223,7 @@ window.onload = async () => {
 		q(appliances.microchip) +
 		q(appliances.processor) * q(4) +
 		q(appliances.graphics) * q(10) +
+		q(appliances.cpu) * q(100) +
 		q(1);
 	setInterval(() => {
 		const re = appliances.computer / 2 + appliances.supercomputer * 2;
@@ -235,7 +244,16 @@ window.onload = async () => {
 			}
 		}
 	});
+	let t = 0;
+	let lt = 0;
+	const cpsTimeout = () => setTimeout(() => {
+		cps2.innerText = String(t - lt);
+		lt = t;
+		cpsTimeout()
+	}, 1000)
+	cpsTimeout()
 	electricboi.addEventListener("click", () => {
+		t++;
 		store.electric += getClicks();
 	});
 };
