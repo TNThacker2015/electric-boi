@@ -79,16 +79,22 @@ const vigints = [
 	"nonagint"
 ];
 export const toWords = (num: bigint) => {
-	if (num <= 20) return under20[Number(num)];
+	// if (num <= 20) return under20[Number(num)];
 	const ones = Number(num % f(10));
 	const tens = Number((num - f(ones)) / f(10)) % 10;
 	const hundreds = Number((num - f(tens)) / f(100));
 	if (num < 1000)
-		return `${hundreds ? `${hundreds} hundred ` : ""}${multiples10[tens]}${ones ? `-${under20[ones]}` : ""}`;
-	if (num < 10000) return `${(Number(num) / 1000).toFixed(3)} thousand`;
+		return num.toString();
+	if (num < 1000000) return `${(Number(num) / 1000).toFixed(3)} thousand`;
 	for (const [index, high] of higher.entries()) {
 		const m = f(10) ** ((f(index) + f(2)) * f(3));
 		if (num < m * f(1000)) return `${num / m} ${high}illion`;
+	}
+	for (const [index, h] of vigints.entries()) {
+		for (const [i, p] of highestPrefixes.entries()) {
+			const m = f(10) ** ((f((index * 10) + i) + f(21)) * f(3));
+			if (num < m * f(1000)) return `${num / m} ${p}${h}illion`;
+		}
 	}
 	return Number(num).toExponential();
 };

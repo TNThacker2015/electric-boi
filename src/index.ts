@@ -63,6 +63,8 @@ console.log(appliances)
 	interface Appliances {
 		computer: number;
 		microchip: number;
+		supercomputer: number;
+		processor: number;
 	}
 	if (!store.appliances) store.appliances = {};
 	if (!store.applianceCosts) store.applianceCosts = {};
@@ -159,19 +161,24 @@ console.log(appliances)
 			buyElem: buy,
 		};
 	};
-	addAppliance("computer", "Computer", "+0.5 CPS", BigInt(100), 1.55);
-	addAppliance("microchip", "Microchip", "+1 Per Click", BigInt(150), 2);
+	addAppliance("computer", "Computer", "+0.5 CPS", BigInt(100), x => x + BigInt(100));
+	addAppliance("microchip", "Microchip", "+1 Per Click", BigInt(150), 1.55);
+	addAppliance("supercomputer", "Supercomputer", "+2 CPS", BigInt(250), x => x + BigInt(200));
 	setInterval(() => {
 		for (const r of Object.values(apps))
-			r!.elem.innerText = String(r!.cost);
+			r!.elem.innerText = toWords(r!.cost);
 		for (const [f, r] of Object.entries(apps))
 			r!.countElem.innerText = String(appliances[f as keyof Appliances] || 0);
 	});
 	setTimeout(() => store.electric || Swal.fire("Click!", "Click the electric boi gif to gain electric bois!", "info"), 8000)
-	setInterval(() => (store.electric += BigInt(appliances.computer)), 2000);
+	setInterval(() => {store.electric += BigInt(appliances.computer);console.log(1)}, 2000);
 	setInterval(() => {
-		cps.innerText = String(appliances.computer / 2)
-		cpc.innerText = String(appliances.microchip + 1)
+		store.electric += BigInt(appliances.supercomputer * 2);
+	}, 1000);
+	setInterval(() => {
+		const c = BigInt(Math.round(appliances.computer / 2))
+		cps.innerText = toWords(c + BigInt(appliances.supercomputer * 2));
+		cpc.innerText = toWords(BigInt(appliances.microchip + 1))
 	})
 	setInterval(() => {
 		for (const [k, v] of Object.entries(apps)) {
@@ -188,4 +195,7 @@ console.log(appliances)
 		store.electric += BigInt(appliances.microchip + 1);
 	});
 };
-setTimeout(() => window.onload!({} as any), 3000)
+setTimeout(() => window.onload!({} as any), 1000)
+const f = setInterval(() => {
+	document.body && (window.onload!({} as any), clearInterval(f))
+})
