@@ -1,11 +1,61 @@
 import { toWords } from "./words";
 import Swal from "sweetalert2";
+import env from "./env.json";
 const q = BigInt;
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
+let addIntervals = true;
+let last = Date.now();
+localStorage.openpages = Date.now();
+window.addEventListener(
+	"storage",
+	e => {
+		if (e.key === "openpages") {
+			localStorage.page_available = Date.now();
+		}
+		if (e.key === "page_available") {
+			addIntervals = false;
+		}
+		if (e.key === "yeet") {
+			last = Number(e.newValue) || Date.now();
+		}
+	},
+	false
+);
+setInterval(() => (localStorage.yeet = Date.now()), 500);
+setInterval(
+	() =>
+		last + 4000 < Date.now() &&
+		((addIntervals = true), (window as any).loadIntervals())
+);
 let done = false;
+let intervaled = false;
 window.onload = async () => {
+	//#region DEBUG FUNCTIONS
+	env.debug && (() => {
+		if (document.getElementById("debugbuttons")) return;
+		const d = document.createElement("DIV");
+		d.innerHTML = "<b>Debug Functions</b>: "
+		d.id = "debugbuttons";
+		document.body.prepend(d);
+		const createDebug = (
+			name: string,
+			func: (this: HTMLElement, ev: MouseEvent) => any
+		) => {
+			const e = document.createElement("BUTTON");
+			e.addEventListener("click", func);
+			e.innerText = name;
+			d.append(e);
+		};
+		createDebug(
+			"clear localstorage",
+			() => (localStorage.clear(), location.reload())
+		);
+	})();
+	//#endregion
+	await new Promise(res => setTimeout(res, 500));
+	// if ()
 	if (done) return;
 	done = true;
 	const defaults: Partial<Store> = {
@@ -42,7 +92,6 @@ window.onload = async () => {
 			return true;
 		}
 	});
-	console.log(appliances);
 	const electricboi = document.getElementById("eleboi");
 	const bois = document.getElementById("bois");
 	const smallBois = document.getElementById("smallbois");
@@ -88,8 +137,33 @@ window.onload = async () => {
 		v &&
 			store[k as keyof Store] === undefined &&
 			(store[k as keyof Store] = v as any);
+	const getCPS = () =>
+		q(appliances.supercomputer) * q(2) +
+		q(appliances.graphics) * q(10) +
+		 q(appliances.cpu) * q(100);
+	(window as any).loadIntervals = () => {
+		if (intervaled) return;
+		addIntervals && (intervaled = true);
+		addIntervals &&
+			setInterval(() => {
+				store.electric += q(appliances.computer);
+			}, 2000);
+		addIntervals &&
+			setInterval(() => {
+				store.electric += getCPS();
+			}, 1000);
+	};
+	(window as any).loadIntervals();
 	setInterval(() => {
-		bois.innerText = `Electric Bois: ${store.electric < q(10000000000) ? store.electric : `${store.electric / q(10)**q(store.electric.toString().length -1)}e+${store.electric.toString().length - 1}`}`;
+		bois.innerText = `Electric Bois: ${
+			store.electric < q(10000000000)
+				? store.electric
+				: `${store.electric /
+						q(10) **
+							q(
+								store.electric.toString().length - 1
+							)}e+${store.electric.toString().length - 1}`
+		}`;
 		smallBois.innerText = toWords(store.electric);
 	});
 	const apps: {
@@ -180,7 +254,7 @@ window.onload = async () => {
 		q(250),
 		x => x + q(200)
 	);
-	addAppliance("processor", "Processor", "+4 Per Click", q(800), 1.15);
+	addAppliance("processor", "Processor", "+4 Per Click", q(1200), 1.25);
 	addAppliance(
 		"graphics",
 		"Graphics Card",
@@ -188,13 +262,7 @@ window.onload = async () => {
 		q(1000),
 		x => x + q(550)
 	);
-	addAppliance(
-		"cpu",
-		"CPU",
-		"+100 CPS",
-		q(20000),
-		x => x + q(11550)
-	);
+	addAppliance("cpu", "CPU", "+100 CPS", q(20000), x => x + q(11550));
 	setInterval(() => {
 		for (const r of Object.values(apps))
 			r!.elem.innerText = toWords(r!.cost);
@@ -213,20 +281,12 @@ window.onload = async () => {
 			),
 		8000
 	);
-	setInterval(() => {
-		store.electric += q(appliances.computer);
-	}, 2000);
-	setInterval(() => {
-		store.electric += q(appliances.supercomputer * 2);
-	}, 1000);
 	const getClicks = () =>
 		q(appliances.microchip) +
 		q(appliances.processor) * q(4) +
-		q(appliances.graphics) * q(10) +
-		q(appliances.cpu) * q(100) +
 		q(1);
 	setInterval(() => {
-		const re = appliances.computer / 2 + appliances.supercomputer * 2;
+		const re = appliances.computer / 2 + Number(getCPS());
 		cps.innerText = re < 10000 ? String(re) : toWords(q(Math.round(re)));
 		cpc.innerText = toWords(getClicks());
 	});
@@ -236,22 +296,23 @@ window.onload = async () => {
 				v!.appElem.style.backgroundColor = "#9338";
 				v!.buyElem.style.backgroundImage =
 					"linear-gradient(#c52, #831)";
-				v!.buyElem.style.cursor = "not-allowed"
+				v!.buyElem.style.cursor = "not-allowed";
 			} else {
 				v!.appElem.style.backgroundColor = "#6f28";
 				v!.buyElem.style.backgroundImage = "";
-				v!.buyElem.style.cursor = ""
+				v!.buyElem.style.cursor = "";
 			}
 		}
 	});
 	let t = 0;
 	let lt = 0;
-	const cpsTimeout = () => setTimeout(() => {
-		cps2.innerText = String(t - lt);
-		lt = t;
-		cpsTimeout()
-	}, 1000)
-	cpsTimeout()
+	const cpsTimeout = () =>
+		setTimeout(() => {
+			cps2.innerText = String(t - lt);
+			lt = t;
+			cpsTimeout();
+		}, 1000);
+	cpsTimeout();
 	electricboi.addEventListener("click", () => {
 		t++;
 		store.electric += getClicks();

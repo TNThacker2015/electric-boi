@@ -16,10 +16,12 @@
 #ele {
 	font-size: 2em;
 	font-weight: 900;
+	margin-top: 5px;
 }
 
 img {
 	-webkit-user-drag: none;
+	user-select: none;
 }
 
 :root {

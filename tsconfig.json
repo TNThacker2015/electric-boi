@@ -9,6 +9,7 @@
 		"allowJs": true,
 		"lib": ["ESNext", "dom"],
 		"rootDir": "src",
+		"resolveJsonModule": true,
 		"moduleResolution": "node"
 	}
 }
