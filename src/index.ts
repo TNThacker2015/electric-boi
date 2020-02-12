@@ -1,55 +1,56 @@
 import { toWords } from "./words";
 import Swal from "sweetalert2";
+const q = BigInt;
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
 let done = false;
 window.onload = async () => {
 	if (done) return;
-done = true;
-const defaults: Partial<Store> = {
-	electric: BigInt(0)
-};
-const store = new Proxy(Object.create(null) as Store, {
-	get(t, k) {
-		const val = localStorage[k as any];
-		if (!val) return;
-		if (typeof defaults[k as keyof Store] === "bigint")
-			return BigInt(val);
-		try {
-			return JSON.parse(val);
-		} catch {
-			return val;
+	done = true;
+	const defaults: Partial<Store> = {
+		electric: q(0)
+	};
+	const store = new Proxy(Object.create(null) as Store, {
+		get(t, k) {
+			const val = localStorage[k as any];
+			if (!val) return;
+			if (typeof defaults[k as keyof Store] === "bigint") return q(val);
+			try {
+				return JSON.parse(val);
+			} catch {
+				return val;
+			}
+		},
+		set(t, k, v) {
+			try {
+				localStorage[k as any] = JSON.stringify(v);
+			} catch {
+				localStorage[k as any] = v;
+			}
+			return true;
 		}
-	},
-	set(t, k, v) {
-		try {
-			localStorage[k as any] = JSON.stringify(v);
-		} catch {
-			localStorage[k as any] = v;
+	});
+	const appliances = new Proxy(Object.create(null) as Appliances, {
+		get(t, k) {
+			return store.appliances[k as keyof Appliances] || 0;
+		},
+		set(t, k, v) {
+			const app = store.appliances;
+			app[k as keyof Appliances] = v;
+			store.appliances = app;
+			return true;
 		}
-		return true;
-	}
-});
-const appliances = new Proxy(Object.create(null) as Appliances, {
-	get(t, k) {
-		return store.appliances[k as keyof Appliances] || 0;
-	},
-	set(t, k, v) {
-		const app = store.appliances;
-		app[k as keyof Appliances] = v;
-		store.appliances = app;
-		return true;
-	}
-});
-console.log(appliances)
+	});
+	console.log(appliances);
 	const electricboi = document.getElementById("eleboi");
 	const bois = document.getElementById("bois");
 	const smallBois = document.getElementById("smallbois");
 	const upgrades = document.getElementById("upgrades");
 	const cps = document.getElementById("cps");
 	const cpc = document.getElementById("cpc");
-	if (!(electricboi && bois && smallBois && upgrades && cps && cpc))
+	const cps2 = document.getElementById("cps2");
+	if (!(electricboi && bois && smallBois && upgrades && cps && cpc && cps2))
 		return (document.body.innerHTML = "err");
 	type ApplianceCosts = {
 		[e in keyof Partial<Appliances>]: bigint;
@@ -59,20 +60,21 @@ console.log(appliances)
 		appliances: Partial<Appliances>;
 		applianceCosts: ApplianceCosts;
 	}
-	
+
 	interface Appliances {
 		computer: number;
 		microchip: number;
 		supercomputer: number;
 		processor: number;
+		graphics: number;
 	}
 	if (!store.appliances) store.appliances = {};
 	if (!store.applianceCosts) store.applianceCosts = {};
-	if (!store.electric) store.electric = BigInt(0);
+	if (!store.electric) store.electric = q(0);
 	const applianceCosts = new Proxy(Object.create(null) as ApplianceCosts, {
 		get(t, k) {
 			const cost = store.applianceCosts[k as keyof ApplianceCosts];
-			return (cost) && BigInt(cost);
+			return cost && q(cost);
 		},
 		set(t, k, v) {
 			const app = store.applianceCosts;
@@ -102,7 +104,7 @@ console.log(appliances)
 		name: keyof Appliances,
 		display: string,
 		desc: string,
-		baseCost = BigInt(10),
+		baseCost = q(10),
 		costMult: number | bigint | ((arg: bigint) => number | bigint),
 		onclick?: (e: typeof apps[keyof typeof apps]) => any
 	) => {
@@ -134,14 +136,21 @@ console.log(appliances)
 		buy.onclick = () => {
 			const obj = apps[name]!;
 			onclick && onclick(obj);
-			if (store.electric < obj.cost) return Swal.fire("Not Enough Electric Bois", "You do not have enough electric bois to buy this.", "error");
+			if (store.electric < obj.cost)
+				return Swal.fire(
+					"Not Enough Electric Bois",
+					"You do not have enough electric bois to buy this.",
+					"error"
+				);
 			else {
 				appliances[name] += 1;
 				store.electric -= obj.cost;
 				obj.cost =
 					typeof costMult === "bigint"
 						? obj.cost * costMult
-						: typeof costMult === "number" ? BigInt(Math.ceil(Number(obj.cost) * costMult)): BigInt(costMult(obj.cost));
+						: typeof costMult === "number"
+						? q(Math.ceil(Number(obj.cost) * costMult))
+						: q(costMult(obj.cost));
 			}
 		};
 		app.append(buy);
@@ -158,44 +167,79 @@ console.log(appliances)
 			elem: c,
 			countElem: r,
 			appElem: app,
-			buyElem: buy,
+			buyElem: buy
 		};
 	};
-	addAppliance("computer", "Computer", "+0.5 CPS", BigInt(100), x => x + BigInt(100));
-	addAppliance("microchip", "Microchip", "+1 Per Click", BigInt(150), 1.55);
-	addAppliance("supercomputer", "Supercomputer", "+2 CPS", BigInt(250), x => x + BigInt(200));
+	addAppliance("computer", "Computer", "+0.5 CPS", q(100), x => x + q(100));
+	addAppliance("microchip", "Microchip", "+1 Per Click", q(150), 1.55);
+	addAppliance(
+		"supercomputer",
+		"Supercomputer",
+		"+2 CPS",
+		q(250),
+		x => x + q(200)
+	);
+	addAppliance("processor", "Processor", "+4 Per Click", q(800), 1.35);
+	addAppliance(
+		"graphics",
+		"Graphics Card",
+		"+10 CPS",
+		q(1000),
+		x => x + q(550)
+	);
 	setInterval(() => {
 		for (const r of Object.values(apps))
 			r!.elem.innerText = toWords(r!.cost);
 		for (const [f, r] of Object.entries(apps))
-			r!.countElem.innerText = String(appliances[f as keyof Appliances] || 0);
+			r!.countElem.innerText = String(
+				appliances[f as keyof Appliances] || 0
+			);
 	});
-	setTimeout(() => store.electric || Swal.fire("Click!", "Click the electric boi gif to gain electric bois!", "info"), 8000)
-	setInterval(() => {store.electric += BigInt(appliances.computer);console.log(1)}, 2000);
+	setTimeout(
+		() =>
+			store.electric ||
+			Swal.fire(
+				"Click!",
+				"Click the electric boi gif to gain electric bois!",
+				"info"
+			),
+		8000
+	);
 	setInterval(() => {
-		store.electric += BigInt(appliances.supercomputer * 2);
+		store.electric += q(appliances.computer);
+	}, 2000);
+	setInterval(() => {
+		store.electric += q(appliances.supercomputer * 2);
 	}, 1000);
+	const getClicks = () =>
+		q(appliances.microchip) +
+		q(appliances.processor) * q(4) +
+		q(appliances.graphics) * q(10) +
+		q(1);
 	setInterval(() => {
-		const c = BigInt(Math.round(appliances.computer / 2))
-		cps.innerText = toWords(c + BigInt(appliances.supercomputer * 2));
-		cpc.innerText = toWords(BigInt(appliances.microchip + 1))
-	})
+		const re = appliances.computer / 2 + appliances.supercomputer * 2;
+		cps.innerText = re < 10000 ? String(re) : toWords(q(Math.round(re)));
+		cpc.innerText = toWords(getClicks());
+	});
 	setInterval(() => {
 		for (const [k, v] of Object.entries(apps)) {
 			if (store.electric < v!.cost) {
-				v!.appElem.style.backgroundColor = "#9338"
-				v!.buyElem.style.backgroundImage = "linear-gradient(#c52, #831)"
+				v!.appElem.style.backgroundColor = "#9338";
+				v!.buyElem.style.backgroundImage =
+					"linear-gradient(#c52, #831)";
+				v!.buyElem.style.cursor = "not-allowed"
 			} else {
-					v!.appElem.style.backgroundColor = "#6f28"
-					v!.buyElem.style.backgroundImage = ""
-			};
+				v!.appElem.style.backgroundColor = "#6f28";
+				v!.buyElem.style.backgroundImage = "";
+				v!.buyElem.style.cursor = ""
+			}
 		}
-	})
+	});
 	electricboi.addEventListener("click", () => {
-		store.electric += BigInt(appliances.microchip + 1);
+		store.electric += getClicks();
 	});
 };
-setTimeout(() => window.onload!({} as any), 1000)
+setTimeout(() => window.onload!({} as any), 1000);
 const f = setInterval(() => {
-	document.body && (window.onload!({} as any), clearInterval(f))
-})
+	document.body && (window.onload!({} as any), clearInterval(f));
+});

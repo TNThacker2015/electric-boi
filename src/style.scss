@@ -43,14 +43,23 @@ img {
 
 #upgrades {
 	border: black 5px solid;
-	width: 440px;
+	width: 530px;
 	height: 400px;
 	overflow-y: auto;
+	overflow-x: auto;
 	position: absolute;
 	top: 20px;
 	right: 20px;
 	text-align: center;
 	background-image: linear-gradient(#4d4, #464);
+
+	#upgradelabel {
+		padding: 5px;
+		margin: 0;
+		position: sticky;
+		top: 0px;
+		background-color: #44D344;
+	}
 
 	p {
 		text-align: center;
@@ -61,18 +70,21 @@ img {
 
 
 	.appliance {
-		justify-content: flex-end;
+		justify-content: center;
 		align-items: center;
 		padding-right: 20px;
 		display: flex;
 
 		.count {
 			font-size: 3em;
+			display: flex;
+			margin-right: auto;
+			padding-left: 20px;
 		}
 
 		.labels {
-			margin-right: 10px;
-			margin-left: 10px;
+			margin-right: auto;
+			margin-left: auto;
 			display: inline-block;
 
 			.label {
@@ -133,7 +145,7 @@ img {
 
 	#cps {
 		&::after {
-			content: " Clicks per Second";
+			content: " Appliance Clicks per Second";
 			font-weight: normal;
 		}
 
@@ -143,6 +155,15 @@ img {
 	#cpc {
 		&::after {
 			content: " Electric Bois per Click";
+			font-weight: normal;
+		}
+
+		font-weight: 900;
+	}
+
+	#cps2 {
+		&::after {
+			content: " User Clicks Per Second";
 			font-weight: normal;
 		}
 
