@@ -171,14 +171,16 @@ window.onload = async () => {
 				}
 			}
 		);
-		const getCPS = () =>
-			q(appliances.computer) +
+		const getCPS = () => {
+			const e = (q(appliances.computer) +
 			q(appliances.supercomputer) * q(2) +
 			q(appliances.graphics) * q(10) +
 			q(appliances.cpu) * q(100) +
 			q(appliances.ram) * q(500) +
 			q(appliances.harddrive) * q(1000) +
-			q(0);
+			q(0));
+			return appliances.overclocking ? (e + (((e * q(100)) / (q(appliances.overclocking) * q(100))) / q(100))) : e;
+		};
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -332,7 +334,8 @@ window.onload = async () => {
 			"ram",
 			"harddrive",
 			// upgrades
-			"critical"
+			"critical",
+			"overclocking"
 		];
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -365,6 +368,7 @@ window.onload = async () => {
 		addAppliance("ram", "RAM", "+500 CPS", q(90000), x => x + q(41550));
 		addAppliance("harddrive", "Hard Drive", "+1000 CPS", q(200000), x => x + q(81550));
 
+		addUpgrade("overclocking", "CPU Overclocking", "+1% Appliance Efficiency", q(1000), 1.8);
 		addUpgrade("critical", "Critical Review", "+1% Crit Chance", q(6000), 5);
 		setInterval(() => {
 			for (const r of Object.values(apps))
