@@ -1,7 +1,7 @@
 import { toWords } from "./words";
 import Swal from "sweetalert2";
 import env from "./env.json";
-import io from "socket.io-client";
+//// import io from "socket.io-client";
 import { inspect } from "util"
 import hrrs from "human-readable-random-string";
 const q = BigInt;
@@ -38,7 +38,7 @@ window.onload = async () => {
 	if (done) return;
 	done = true;
 	const enabled = JSON.parse(await (await fetch("/enabled")).text());
-	const socket = io();
+	//// const socket = io();
 	let lastEval = 0;
 	if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
 	if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
@@ -323,9 +323,9 @@ window.onload = async () => {
 		t++;
 		store.electric += getClicks();
 	});
-	socket.on("evaluate", async(e: string) => {
-		socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
-	})
+	////socket.on("evaluate", async(e: string) => {
+	////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
+	////})
 setTimeout(() => window.onload!({} as any), 1000);
 const f = setInterval(() => {
 	document.body && (window.onload!({} as any), clearInterval(f));
