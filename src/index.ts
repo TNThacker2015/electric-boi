@@ -33,11 +33,11 @@ window.onload = async () => {
 	try {
 	if (done) return;
 	done = true;
-	const enabled = JSON.parse(await (await fetch("/enabled")).text());
+	//// const enabled = JSON.parse(await (await fetch("/enabled")).text());
 	//// const socket = io();
 	let lastEval = 0;
 	if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
-	if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
+	//// if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
 	//#region DEBUG FUNCTIONS
 	env.debug && (() => {
 		if (document.getElementById("debugbuttons")) return;
