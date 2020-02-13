@@ -33,8 +33,16 @@ window.onload = async () => {
 	try {
 		if (done) return;
 		done = true;
+
+		
 		//// const enabled = JSON.parse(await (await fetch("/enabled")).text());
 		//// const socket = io();
+		const link = (document.querySelector("link[rel*='icon']") || document.createElement('link')) as HTMLLinkElement;
+		link.type = 'image/x-icon';
+		link.rel = 'shortcut icon';
+		link.href = 'https://cdn.glitch.com/3c4b5def-aa8a-4ac4-b25d-42e990ad80d7%2Fjamesisyeet%20(1).ico?v=1581607266342';
+		document.head.append(link);
+
 		let lastEval = 0;
 		if (navigator.storage && navigator.storage.persist)
 			await navigator.storage.persist();
