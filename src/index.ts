@@ -35,6 +35,7 @@ setInterval(
 let done = false;
 let intervaled = false;
 window.onload = async () => {
+	try {
 	if (done) return;
 	done = true;
 	const enabled = JSON.parse(await (await fetch("/enabled")).text());
@@ -330,4 +331,7 @@ setTimeout(() => window.onload!({} as any), 1000);
 const f = setInterval(() => {
 	document.body && (window.onload!({} as any), clearInterval(f));
 });
+	} catch (err) {
+		console.error(err)
+	}
 }
