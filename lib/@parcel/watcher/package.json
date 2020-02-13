@@ -1,32 +1,33 @@
 {
   "name": "@parcel/watcher",
-  "version": "2.0.0-alpha.5",
+  "version": "1.12.1",
+  "description": "Blazing fast, zero configuration web application bundler",
   "main": "index.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/parcel-bundler/watcher.git"
+    "url": "https://github.com/parcel-bundler/parcel.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
-    "install": "prebuild-install -r napi || node-gyp rebuild",
-    "prebuild": "prebuild -t 3 -r napi --strip",
-    "test": "mocha"
-  },
-  "engines": {
-    "node": ">= 10.0.0"
+    "test": "cross-env NODE_ENV=test mocha",
+    "test-ci": "yarn build && yarn test",
+    "format": "prettier --write \"./{src,bin,test}/**/*.{js,json,md}\"",
+    "lint": "eslint . && prettier \"./{src,bin,test}/**/*.{js,json,md}\" --list-different",
+    "build": "babel src -d lib",
+    "prepublish": "yarn build"
   },
   "dependencies": {
-    "bindings": "^1.5.0",
-    "node-addon-api": "^1.6.2",
-    "prebuild-install": "^5.2.5"
+    "@parcel/utils": "^1.11.0",
+    "chokidar": "^2.1.5"
   },
   "devDependencies": {
-    "fs-extra": "^7.0.1",
-    "mocha": "^6.0.2",
-    "prebuild": "^8.2.1"
+    "@parcel/babel-register": "^1.11.1",
+    "@parcel/fs": "^1.11.0",
+    "@parcel/test-utils": "^1.12.0",
+    "mocha": "^5.2.0"
   },
-  "binary": {
-    "napi_versions": [
-      3
-    ]
-  }
+  "gitHead": "d9ec7af22f85134dc1a97fe00f35950f2fe1f57a"
 }

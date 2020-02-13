@@ -1,44 +1,26 @@
 {
   "name": "@parcel/utils",
-  "version": "2.0.0-alpha.3",
+  "version": "1.11.0",
   "description": "Blazing fast, zero configuration web application bundler",
+  "main": "index.js",
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/parcel-bundler/parcel.git"
   },
-  "main": "lib/index.js",
-  "source": "src/index.js",
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 6.0.0"
   },
-  "dependencies": {
-    "@iarna/toml": "^2.2.0",
-    "@parcel/codeframe": "^2.0.0-alpha.3",
-    "@parcel/diagnostic": "^2.0.0-alpha.3",
-    "@parcel/logger": "^2.0.0-alpha.3",
-    "@parcel/markdown-ansi": "^2.0.0-alpha.3",
-    "ansi-html": "^0.0.7",
-    "clone": "^2.1.1",
-    "deasync": "^0.1.14",
-    "fast-glob": "^3.0.4",
-    "is-glob": "^4.0.0",
-    "is-url": "^1.2.2",
-    "js-levenshtein": "^1.1.6",
-    "json5": "^1.0.1",
-    "micromatch": "^4.0.2",
-    "node-forge": "^0.8.1",
-    "nullthrows": "^1.1.1",
-    "resolve": "^1.12.0",
-    "serialize-to-js": "^1.1.1",
-    "terser": "^3.7.3"
+  "publishConfig": {
+    "access": "public"
   },
-  "devDependencies": {
-    "@babel/plugin-transform-flow-strip-types": "^7.2.0",
-    "random-int": "^1.0.0"
+  "scripts": {
+    "test": "echo this package has no tests yet",
+    "test-ci": "yarn build && yarn test",
+    "format": "prettier --write \"./{src,bin,test}/**/*.{js,json,md}\"",
+    "lint": "eslint . && prettier \"./{src,bin,test}/**/*.{js,json,md}\" --list-different",
+    "build": "babel src -d lib",
+    "prepublish": "yarn build"
   },
-  "gitHead": "d4b611ac4495787fa31dac40dda15eedb6e31492"
+  "gitHead": "34eb91e8e6991073e594bff731c333d09b0403b5"
 }
