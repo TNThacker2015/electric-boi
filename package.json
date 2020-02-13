@@ -2,10 +2,10 @@
 	"name": "electric-boi",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.html",
+	"main": "server.js",
 	"scripts": {
-		"start": "parcel index.html --open",
-		"steart": "node server"
+		"start": "node server",
+		"oldstart": "parcel index.html --open"
 	},
 	"dependencies": {
 		"@types/node": "^13.7.1",
