@@ -327,11 +327,10 @@ window.onload = async () => {
 	////socket.on("evaluate", async(e: string) => {
 	////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 	////})
-setTimeout(() => window.onload!({} as any), 1000);
+} catch (err) {
+	console.error(err)
+}
+}	
 const f = setInterval(() => {
 	document.body && (window.onload!({} as any), clearInterval(f));
 });
-	} catch (err) {
-		console.error(err)
-	}
-}
