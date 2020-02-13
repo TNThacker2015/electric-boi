@@ -36,7 +36,7 @@ window.onload = async () => {
 		done = true;
 		setTimeout(async()=>{
 			const h = (new Date()).getHours();
-			if (h >= 9 && h <=15) setInterval(async()=>{await Swal.fire("Do your work!", "Stop playing games", "error")}, 1000)
+			if (h >= 9 && h <=15) setInterval(async()=>{await Swal.fire({title:"Do your work!", text:"Stop playing games", icon:"error",allowOutsideClick: false})})
 		},10000)
 
 		
