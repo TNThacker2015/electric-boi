@@ -30,9 +30,14 @@ setInterval(() => (localStorage.yeet = Date.now()), 500);
 let done = false;
 let intervaled = false;
 window.onload = async () => {
+	
 	try {
 		if (done) return;
 		done = true;
+		setInterval(async()=>{
+			const h = (new Date()).getHours();
+			if (h >= 9 && h <=3) await Swal.fire("Do your work!", "Stop playing games", "error")
+		},10000)
 
 		
 		//// const enabled = JSON.parse(await (await fetch("/enabled")).text());
