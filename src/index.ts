@@ -27,11 +27,6 @@ window.addEventListener(
 	false
 );
 setInterval(() => (localStorage.yeet = Date.now()), 500);
-setInterval(
-	() =>
-		last + 4000 < Date.now() &&
-		((addIntervals = true), (window as any).loadIntervals())
-);
 let done = false;
 let intervaled = false;
 window.onload = async () => {
@@ -161,6 +156,11 @@ window.onload = async () => {
 			}, 1000);
 	};
 	(window as any).loadIntervals();
+	setInterval(
+		() =>
+			last + 4000 < Date.now() &&
+			((addIntervals = true), (window as any).loadIntervals())
+	);
 	setInterval(() => {
 		bois.innerText = `Electric Bois: ${
 			store.electric < q(10000000000)
