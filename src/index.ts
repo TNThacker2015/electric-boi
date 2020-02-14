@@ -35,8 +35,10 @@ window.onload = async () => {
 		if (done) return;
 		done = true;
 		setTimeout(async()=>{
-			const h = (new Date()).getHours();
-			if (h >= 9 && h <=15) console.log(setInterval(async()=>{await Swal.fire({title:"Do your work!", text:"Stop playing games", icon:"error",allowOutsideClick: false})}))
+			const date = new Date();
+			const h = date.getHours();
+			const d = date.getDay()
+			// if (h >= 9 && h <=15) console.log(setInterval(async()=>{await Swal.fire({title:"Do your work!", text:"Stop playing games", icon:"error",allowOutsideClick: false})}))
 		},2000)
 
 		
