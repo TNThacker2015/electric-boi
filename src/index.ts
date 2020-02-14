@@ -179,7 +179,7 @@ window.onload = async () => {
 			q(appliances.ram) * q(500) +
 			q(appliances.harddrive) * q(1000) +
 			q(0));
-			return appliances.overclocking ? (e + (((e * q(100)) / (q(appliances.overclocking) * q(100))) / q(100))) : e;
+			return e + (e / q(100) * q(appliances.overclocking))
 		};
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
