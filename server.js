@@ -1,9 +1,11 @@
-const Bundler = require("parcel-bundler");
-const express = require("express");
+import Bundler from "parcel-bundler";
+import express from "express";
 const bundler = new Bundler(["index.html", "admin/index.html"]);
 const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+import { createServer } from "http"
+const http = createServer(app);
+import socketIo from "socket.io"
+const io = socketIo(http);
 const password =
 	"625F7FDB99DE7DE358AB119EAD94C29B436764E1BFFB3AF4F1CA715B692CF155E62007572CE4101FEF09A98130369DE7A06CCD57903B4C5A9104D1444A02F4A2";
 app.get("/", (req, res) => res.redirect("/index.html"));
@@ -13,11 +15,11 @@ let enabled = true;
 app.use(bundler.middleware());
 app.use(express.json());
 io.on("connection", socket => {
-	const boomerang = tt => 
+	const boomerang = (tt) => 
 	socket.on(tt, t => {
 		io.emit(tt, t);
 	});
-	const allBoom = t => t.map(boomerang)
+	const allBoom = (t) => t.map(boomerang)
 	socket.on("turn", tff => {
 		const tf = JSON.parse(tff);
 		if (typeof tf !== "boolean") return;
@@ -35,7 +37,9 @@ app.post("/password", (req, res) => {
 });
 setInterval(() => {
 	const n = io.sockets;
-	if (n.length !== last.length) io.emit("changed", Object.keys(n.connected))
+	const keys = Object.keys(n.connected);
+	if (keys.length !== last.length) io.emit("changed", keys);
+	last = keys;
 }, 5000)
 let last = [];
 http.listen(1234, () => {

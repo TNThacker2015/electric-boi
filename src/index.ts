@@ -30,24 +30,28 @@ setInterval(() => (localStorage.yeet = Date.now()), 500);
 let done = false;
 let intervaled = false;
 window.onload = async () => {
-	
 	try {
 		if (done) return;
 		done = true;
-		setTimeout(async()=>{
-			const date = new Date();
-			const h = date.getHours();
-			const d = date.getDay()
-			// if (h >= 9 && h <=15) console.log(setInterval(async()=>{await Swal.fire({title:"Do your work!", text:"Stop playing games", icon:"error",allowOutsideClick: false})}))
-		},2000)
+		let current: HTMLAudioElement | null = null;
+		const playSound = (s: string, v: number) => {
+			if (current) current.pause();
+			const e = document.getElementById(s) as HTMLAudioElement;
+			if (!e) return false;
+			current = new Audio(e.src);
+			current.volume = v;
+			current.loop = true;
+			current.play();
+			return true;
+		};
 
-		
 		//// const enabled = JSON.parse(await (await fetch("/enabled")).text());
 		//// const socket = io();
-		const link = (document.querySelector("link[rel*='icon']") || document.createElement('link')) as HTMLLinkElement;
-		link.type = 'image/x-icon';
-		link.rel = 'shortcut icon';
-		link.href = 'https://cdn.glitch.com/3c4b5def-aa8a-4ac4-b25d-42e990ad80d7%2Fjamesisyeet%20(1).ico?v=1581607266342';
+		const link = (document.querySelector("link[rel*='icon']") ||
+			document.createElement("link")) as HTMLLinkElement;
+		link.type = "image/x-icon";
+		link.rel = "shortcut icon";
+		link.href = (document.getElementById("ico") as HTMLLinkElement).href;
 		document.head.append(link);
 
 		let lastEval = 0;
@@ -131,6 +135,13 @@ window.onload = async () => {
 		const cpc = document.getElementById("cpc");
 		const cps2 = document.getElementById("cps2");
 		const crit = document.getElementById("crit");
+		const windows = document.getElementById("window") as
+			| undefined
+			| HTMLAudioElement;
+		const exclamation = document.getElementById("exclamation") as
+			| undefined
+			| HTMLAudioElement;
+		const musicbar = document.getElementById("musicbar");
 		if (
 			!(
 				electricboi &&
@@ -141,7 +152,10 @@ window.onload = async () => {
 				cps &&
 				cpc &&
 				cps2 &&
-				crit
+				crit &&
+				windows &&
+				exclamation &&
+				musicbar
 			)
 		)
 			return (document.body.innerHTML = "err");
@@ -153,6 +167,7 @@ window.onload = async () => {
 			appliances: Partial<Appliances>;
 			applianceCosts: ApplianceCosts;
 			uuid: string;
+			music: string;
 		}
 
 		if (!store.appliances) store.appliances = {};
@@ -179,14 +194,15 @@ window.onload = async () => {
 			}
 		);
 		const getCPS = () => {
-			const e = (q(appliances.computer) +
-			q(appliances.supercomputer) * q(2) +
-			q(appliances.graphics) * q(10) +
-			q(appliances.cpu) * q(100) +
-			q(appliances.ram) * q(500) +
-			q(appliances.harddrive) * q(1000) +
-			q(0));
-			return e + (e / q(100) * q(appliances.overclocking))
+			const e =
+				q(appliances.computer) +
+				q(appliances.supercomputer) * q(2) +
+				q(appliances.graphics) * q(10) +
+				q(appliances.cpu) * q(100) +
+				q(appliances.ram) * q(500) +
+				q(appliances.harddrive) * q(1000) +
+				q(0);
+			return e + (e / q(100)) * q(appliances.overclocking);
 		};
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
@@ -258,6 +274,7 @@ window.onload = async () => {
 			buy.classList.add("buy");
 			buy.innerText = "BUY";
 			buy.onclick = () => {
+				new Audio(windows.src).play();
 				const obj = apps[name]!;
 				onclick && onclick(obj);
 				if (store.electric < obj.cost)
@@ -373,10 +390,28 @@ window.onload = async () => {
 			1.1
 		);
 		addAppliance("ram", "RAM", "+500 CPS", q(90000), x => x + q(41550));
-		addAppliance("harddrive", "Hard Drive", "+1000 CPS", q(200000), x => x + q(81550));
+		addAppliance(
+			"harddrive",
+			"Hard Drive",
+			"+1000 CPS",
+			q(200000),
+			x => x + q(81550)
+		);
 
-		addUpgrade("overclocking", "CPU Overclocking", "+1% Appliance Efficiency", q(1000), 1.8);
-		addUpgrade("critical", "Critical Review", "+1% Crit Chance", q(6000), 5);
+		addUpgrade(
+			"overclocking",
+			"CPU Overclocking",
+			"+1% Appliance Efficiency",
+			q(1000),
+			1.8
+		);
+		addUpgrade(
+			"critical",
+			"Critical Review",
+			"+1% Crit Chance",
+			q(6000),
+			5
+		);
 		setInterval(() => {
 			for (const r of Object.values(apps))
 				r!.elem.innerText = toWords(r!.cost);
@@ -430,9 +465,12 @@ window.onload = async () => {
 			}, 1000);
 		cpsTimeout();
 		electricboi.addEventListener("click", () => {
+			const ex = new Audio(exclamation.src);
+			ex.volume = 0.1;
+			ex.play();
 			t++;
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
-				store.electric += getClicks() * q(100)
+				store.electric += getClicks() * q(100);
 			} else {
 				store.electric += getClicks();
 			}
@@ -440,6 +478,45 @@ window.onload = async () => {
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
+		playSound(store.music || "rick", 0.7);
+		for (const elem of ["Rick", "SovietAnthem", "Silence"]) {
+			const ne = document.createElement("BUTTON");
+			ne.onclick = () => (
+				(store.music = elem.toLowerCase()),
+				playSound(elem.toLowerCase(), 0.5)
+			);
+			ne.innerText = elem;
+			musicbar.append(ne);
+		}
+		const date = new Date();
+		const h = date.getHours();
+		const d = date.getDay();
+		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
+			const { value: pass } = await Swal.fire({
+				title: "Bypass Password",
+				text: "Enter the password if you know it. If you don't, that means you aren't supposed to.",
+				input: "password",
+				allowOutsideClick: false,
+				inputValue: "",
+				icon: "info"
+			});
+			if (pass !== "get jamed")
+				return await Swal.fire({
+					title: "Access DENIED!",
+					html: "Incorrect password.<br />Do your work now; stop playing games.",
+					icon: "error",
+					allowOutsideClick: false,
+					showConfirmButton: false
+				});
+			else
+				await Swal.fire({
+					toast: true,
+					text: "Password was correct.",
+					title: "Access Granted.",
+					position: "bottom",
+					icon: "success"
+				});
+		}
 	} catch (err) {
 		console.error(err);
 	}

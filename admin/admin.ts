@@ -12,6 +12,7 @@ window.onload = async () => {
 	const Text = Swal.mixin({
 		input: "text",
 		inputValue: "",
+		icon: "info",
 		showCancelButton: true
 	});
 	const { value: pass } = await Text.fire({
