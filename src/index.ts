@@ -479,7 +479,7 @@ window.onload = async () => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
 		playSound(store.music || "rick", 0.7);
-		for (const elem of ["Rick", "SovietAnthem", "Silence"]) {
+		for (const elem of ["EndlessRick", "SovietAnthem", "Silence"]) {
 			const ne = document.createElement("BUTTON");
 			ne.onclick = () => (
 				(store.music = elem.toLowerCase()),
