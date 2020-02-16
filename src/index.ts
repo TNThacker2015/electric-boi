@@ -441,7 +441,7 @@ window.onload = async () => {
 			"quantumprocessor",
 			"Quantum Processor",
 			"+5% Appliance Efficiency",
-			q(100000),
+			q(1000000),
 			11
 		);
 		setInterval(() => {
