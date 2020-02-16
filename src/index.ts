@@ -86,6 +86,12 @@ window.onload = async () => {
 						location.reload()
 					)
 				);
+				createDebug(
+					"+1000000",
+					() => (
+						localStorage.electric = "1000000"
+					)
+				);
 			})();
 		//#endregion
 		await new Promise(res => setTimeout(res, 500));
