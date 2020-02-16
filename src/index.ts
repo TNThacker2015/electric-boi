@@ -41,7 +41,7 @@ window.onload = async () => {
 			current = new Audio(e.src);
 			current.volume = v;
 			current.loop = true;
-			await current.play();
+			// await current.play();
 			return true;
 		};
 
@@ -270,7 +270,7 @@ window.onload = async () => {
 			buy.classList.add("buy");
 			buy.innerText = "BUY";
 			buy.onclick = () => {
-				new Audio(windows.src).play();
+				// new Audio(windows.src).play();
 				const obj = apps[name]!;
 				onclick && onclick(obj);
 				if (store.electric < obj.cost)
@@ -521,7 +521,7 @@ window.onload = async () => {
 		electricboi.addEventListener("click", () => {
 			const ex = new Audio(exclamation.src);
 			ex.volume = 0.1;
-			ex.play();
+			// ex.play();
 			t++;
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
 				store.electric += getClicks() * q(store.crit);
