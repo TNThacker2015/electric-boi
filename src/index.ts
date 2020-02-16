@@ -532,7 +532,7 @@ window.onload = async () => {
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
 				store.electric += getClicks() * q(store.crit);
 				electricboi.style.filter = "hue-rotate(150deg) saturate(5) brightness(6)";
-				setTimeout(() => electricboi.style.filter = "", 200)
+				setTimeout(() => electricboi.style.filter = "", 500)
 			} else {
 				store.electric += getClicks();
 			}
