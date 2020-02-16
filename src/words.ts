@@ -110,25 +110,26 @@ const bigbois = [
 	"octingent",
 	"nongent"
 ];
+const nm = (num: bigint, m: bigint) => `.${num.toString().replace((num / m).toString(), "").slice(0, 3)}`
 export const toWords = (num: bigint): string => {
 	// if (num <= 20) return under20[Number(num)];
 	if (num < 1000) return num.toString();
 	if (num < 1000000) return `${(Number(num) / 1000).toFixed(3)} thousand`;
 	for (const [index, high] of higher.entries()) {
 		const m = f(10) ** ((f(index) + f(2)) * f(3));
-		if (num < m * f(1000)) return `${num / m} ${high}illion`;
+		if (num < m * f(1000)) return `${num / m}${nm(num, m)} ${high}illion`;
 	}
 	for (const [index, h] of vigints.entries()) {
 		for (const [i, p] of highestPrefixes.entries()) {
 			const m = f(10) ** ((f(index * 10 + i) + f(21)) * f(3));
-			if (num < m * f(1000)) return `${num / m} ${p}${h}illion`;
+			if (num < m * f(1000)) return `${num / m}${nm(num, m)} ${p}${h}illion`;
 		}
 	}
 	for (const [index, h] of bigbois.entries()) {
 		for (const [i, p] of bigPrefix.entries()) {
 			for (const [j, s] of highestPrefixes.entries()) {
 				const m = f(10) ** ((f(index * 100 + i * 10 + j) + f(201)) * f(3));
-				if (num < m * f(1000)) return `${num / m} ${s}${p}${h}illion`;
+				if (num < m * f(1000)) return `${num / m}${nm(num, m)} ${s}${p}${h}illion`;
 			}
 		}
 	}

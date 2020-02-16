@@ -516,7 +516,7 @@ window.onload = async () => {
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
-		 playSound(store.music || "rick", 0.7);
+		// playSound(store.music || "rick", 0.7);
 		for (const elem of ["EndlessRick", "SovietAnthem", "Silence"]) {
 			const ne = document.createElement("BUTTON");
 			ne.onclick = () => (
