@@ -34,14 +34,14 @@ window.onload = async () => {
 		if (done) return;
 		done = true;
 		let current: HTMLAudioElement | null = null;
-		const playSound = (s: string, v: number) => {
+		const playSound = async(s: string, v: number) => {
 			if (current) current.pause();
 			const e = document.getElementById(s) as HTMLAudioElement;
 			if (!e) return false;
 			current = new Audio(e.src);
 			current.volume = v;
 			current.loop = true;
-			current.play();
+			await current.play();
 			return true;
 		};
 
@@ -135,6 +135,7 @@ window.onload = async () => {
 		const cpc = document.getElementById("cpc");
 		const cps2 = document.getElementById("cps2");
 		const crit = document.getElementById("crit");
+		const boost = document.getElementById("boost");
 		const windows = document.getElementById("window") as
 			| undefined
 			| HTMLAudioElement;
@@ -155,6 +156,7 @@ window.onload = async () => {
 				crit &&
 				windows &&
 				exclamation &&
+				boost &&
 				musicbar
 			)
 		)
@@ -168,11 +170,13 @@ window.onload = async () => {
 			applianceCosts: ApplianceCosts;
 			uuid: string;
 			music: string;
+			crit: number;
 		}
 
 		if (!store.appliances) store.appliances = {};
 		if (!store.applianceCosts) store.applianceCosts = {};
 		if (!store.electric) store.electric = q(0);
+		if (!store.crit) store.crit = 10;
 		if (!store.uuid)
 			store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
@@ -193,17 +197,9 @@ window.onload = async () => {
 				}
 			}
 		);
-		const getCPS = () => {
-			const e =
-				q(appliances.computer) +
-				q(appliances.supercomputer) * q(2) +
-				q(appliances.graphics) * q(10) +
-				q(appliances.cpu) * q(100) +
-				q(appliances.ram) * q(500) +
-				q(appliances.harddrive) * q(1000) +
-				q(0);
-			return e + (e / q(100)) * q(appliances.overclocking);
-		};
+		const getIncrease = () => 
+		q(appliances.overclocking) + 
+		q(appliances.quantumprocessor * 5);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -347,6 +343,18 @@ window.onload = async () => {
 				onclick
 			);
 
+			const getCPS = () => {
+				const e =
+					q(appliances.computer) +
+					q(appliances.supercomputer) * q(2) +
+					q(appliances.graphics) * q(10) +
+					q(appliances.cpu) * q(100) +
+					q(appliances.ram) * q(500) +
+					q(appliances.harddrive) * q(1000) +
+					q(appliances.ssd) * q(100000) +
+					q(0);
+				return e + (e / q(100)) * getIncrease();
+			};
 		type ApplianceNames = [
 			"computer",
 			"microchip",
@@ -357,9 +365,12 @@ window.onload = async () => {
 			"liquidcooling",
 			"ram",
 			"harddrive",
+			"ssd",
+			"motherboard",
 			// upgrades
 			"critical",
-			"overclocking"
+			"overclocking",
+			"quantumprocessor"
 		];
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -397,7 +408,21 @@ window.onload = async () => {
 			q(200000),
 			x => x + q(81550)
 		);
-
+		addAppliance(
+			"motherboard",
+			"Motherboard",
+			"+100 Per Click",
+			q(1000000),
+			x => x + q(400000)
+		);
+		addAppliance(
+			"ssd",
+			"SSD",
+			"+100000 CPS",
+			q(2000000),
+			x => x + q(1281550)
+		);
+			// upgrades
 		addUpgrade(
 			"overclocking",
 			"CPU Overclocking",
@@ -411,6 +436,13 @@ window.onload = async () => {
 			"+1% Crit Chance",
 			q(6000),
 			5
+		);
+		addUpgrade(
+			"quantumprocessor",
+			"Quantum Processor",
+			"+5% Appliance Efficiency",
+			q(100000),
+			11
 		);
 		setInterval(() => {
 			for (const r of Object.values(apps))
@@ -434,12 +466,16 @@ window.onload = async () => {
 			q(appliances.microchip) +
 			q(appliances.processor) * q(4) +
 			q(appliances.liquidcooling) * q(10) +
+			q(appliances.motherboard) * q(100) +
 			q(1);
 		const getCritical = () => q(appliances.critical) + q(1);
 		setInterval(() => {
 			cps.innerText = toWords(getCPS());
 			cpc.innerText = toWords(getClicks());
 			crit.innerText = `${getCritical()}%`;
+			crit.title = `There is a ${getCritical()}% chance that a manual click will be worth ${store.crit}x its normal amount!`
+			boost.innerText = `${getIncrease()}%`;
+			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`
 		});
 		setInterval(() => {
 			for (const [k, v] of Object.entries(apps)) {
@@ -470,7 +506,9 @@ window.onload = async () => {
 			ex.play();
 			t++;
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
-				store.electric += getClicks() * q(100);
+				store.electric += getClicks() * q(store.crit);
+				electricboi.style.filter = "hue-rotate(150deg) saturate(5) brightness(6)";
+				setTimeout(() => electricboi.style.filter = "", 200)
 			} else {
 				store.electric += getClicks();
 			}
@@ -478,7 +516,7 @@ window.onload = async () => {
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
-		playSound(store.music || "rick", 0.7);
+		 playSound(store.music || "rick", 0.7);
 		for (const elem of ["EndlessRick", "SovietAnthem", "Silence"]) {
 			const ne = document.createElement("BUTTON");
 			ne.onclick = () => (

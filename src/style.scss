@@ -183,8 +183,17 @@ img {
 			content: " Critical Chance";
 			font-weight: normal;
 		}
+		cursor: help;
+		font-weight: 900;
+	}
+	#boost {
+		&::after {
+			content: " Appliance Boost Percentage";
+			font-weight: normal;
+		}
 
 		font-weight: 900;
+		cursor: help;
 	}
 
 	margin-bottom: 15px;
