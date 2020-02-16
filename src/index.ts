@@ -352,6 +352,7 @@ window.onload = async () => {
 					q(appliances.ram) * q(500) +
 					q(appliances.harddrive) * q(1000) +
 					q(appliances.ssd) * q(100000) +
+					q(appliances.swap) * q(1000000) +
 					q(0);
 				return e + (e / q(100)) * getIncrease();
 			};
@@ -367,6 +368,8 @@ window.onload = async () => {
 			"harddrive",
 			"ssd",
 			"motherboard",
+			"sli",
+			"swap",
 			// upgrades
 			"critical",
 			"overclocking",
@@ -396,7 +399,7 @@ window.onload = async () => {
 		addAppliance(
 			"liquidcooling",
 			"Liquid Cooling",
-			"+10 Per Click",
+			"+15 Per Click",
 			q(22000),
 			1.1
 		);
@@ -411,7 +414,7 @@ window.onload = async () => {
 		addAppliance(
 			"motherboard",
 			"Motherboard",
-			"+100 Per Click",
+			"+500 Per Click",
 			q(1000000),
 			x => x + q(400000)
 		);
@@ -421,6 +424,20 @@ window.onload = async () => {
 			"+100000 CPS",
 			q(2000000),
 			x => x + q(1281550)
+		);
+		addAppliance(
+			"sli",
+			"SLI Bridge",
+			"+10000 Per Click",
+			q(35000000),
+			1.4
+		);
+		addAppliance(
+			"swap",
+			"Swap Space",
+			"+1000000 CPS",
+			q(100_000_000),
+			1.4
 		);
 			// upgrades
 		addUpgrade(
@@ -432,7 +449,7 @@ window.onload = async () => {
 		);
 		addUpgrade(
 			"critical",
-			"Critical Review",
+			"USB Drive",
 			"+1% Crit Chance",
 			q(6000),
 			5
@@ -465,8 +482,9 @@ window.onload = async () => {
 		const getClicks = () =>
 			q(appliances.microchip) +
 			q(appliances.processor) * q(4) +
-			q(appliances.liquidcooling) * q(10) +
-			q(appliances.motherboard) * q(100) +
+			q(appliances.liquidcooling) * q(15) +
+			q(appliances.motherboard) * q(500) +
+			q(appliances.sli) * q(10000) +
 			q(1);
 		const getCritical = () => q(appliances.critical) + q(1);
 		setInterval(() => {
