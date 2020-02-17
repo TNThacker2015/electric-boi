@@ -544,7 +544,7 @@ window.onload = async () => {
 			musicbar.append(ne);
 		}
 		const date = new Date();
-		const h = date.getHours();
+		const h = 0//date.getHours();
 		const d = date.getDay();
 		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
 			const { value: pass } = await Swal.fire({
