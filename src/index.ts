@@ -221,7 +221,8 @@ window.onload = async () => {
 				((addIntervals = true), (window as any).loadIntervals())
 		);
 		setInterval(() => {
-			bois.innerText = `Electric Bois: ${store.electric.toString().length > 10 ? store.electric.toString().slice(0, 9) + "..." : store.electric}`;
+			const elecStr = store.electric.toString();
+			bois.innerText = `Electric Bois: ${elecStr.length > 16 ? `${elecStr.slice(0, 16)}... (${elecStr.length - 16} more)` : elecStr}`;
 			smallBois.innerText = toWords(store.electric);
 		});
 		const apps: {
