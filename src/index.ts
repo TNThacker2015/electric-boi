@@ -221,15 +221,7 @@ window.onload = async () => {
 				((addIntervals = true), (window as any).loadIntervals())
 		);
 		setInterval(() => {
-			bois.innerText = `Electric Bois: ${
-				store.electric < q(10000000000)
-					? store.electric
-					: `${store.electric /
-							q(10) **
-								q(
-									store.electric.toString().length - 1
-								)}e+${store.electric.toString().length - 1}`
-			}`;
+			bois.innerText = `Electric Bois: ${store.electric.toString().length > 10 ? store.electric.toString().slice(0, 9) + "..." : store.electric}`;
 			smallBois.innerText = toWords(store.electric);
 		});
 		const apps: {
