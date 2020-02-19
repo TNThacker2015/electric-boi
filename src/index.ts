@@ -536,7 +536,8 @@ window.onload = async () => {
 		const h = date.getHours();
 		const d = date.getDay();
 		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
-			electricboi.style.visibility = "none";
+			const all = [electricboi, upgrades, powerups];
+			all.map(x => x.style.display = "none");
 			const { value: pass } = await Swal.fire({
 				title: "Bypass Password",
 				text:
@@ -556,6 +557,7 @@ window.onload = async () => {
 					showConfirmButton: false
 				});
 			else {
+				all.map(x => x.style.display = "");
 				await Swal.fire({
 					toast: true,
 					text: "Password was correct.",
@@ -563,7 +565,6 @@ window.onload = async () => {
 					position: "bottom",
 					icon: "success"
 				});
-				electricboi.style.visibility = "";
 			}
 		}
 	} catch (err) {
