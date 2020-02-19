@@ -453,7 +453,7 @@ window.onload = async () => {
 				r!.countElem.innerText = String(
 					appliances[f as keyof Appliances] || 0
 				);
-		});
+		});/*
 		setTimeout(
 			() =>
 				store.electric ||
@@ -463,7 +463,7 @@ window.onload = async () => {
 					"info"
 				),
 			8000
-		);
+		);*/
 		const getClicks = () =>
 			q(appliances.microchip) +
 			q(appliances.processor) * q(4) +
