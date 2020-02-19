@@ -10,6 +10,7 @@ const entries = Object.entries as <T>(
 ) => [Extract<keyof T, string>, T[keyof T]][];
 let addIntervals = true;
 let last = Date.now();
+const Toast = Swal.mixin({ toast: true, position: "bottom" });
 localStorage.openpages = Date.now();
 window.addEventListener(
 	"storage",
@@ -34,7 +35,7 @@ window.onload = async () => {
 		if (done) return;
 		done = true;
 		let current: HTMLAudioElement | null = null;
-		const playSound = async(s: string, v: number) => {
+		const playSound = async (s: string, v: number) => {
 			if (current) current.pause();
 			const e = document.getElementById(s) as HTMLAudioElement;
 			if (!e) return false;
@@ -88,9 +89,7 @@ window.onload = async () => {
 				);
 				createDebug(
 					"+1000000",
-					() => (
-						localStorage.electric = "1000000"
-					)
+					() => (localStorage.electric = "1000000")
 				);
 			})();
 		//#endregion
@@ -149,6 +148,7 @@ window.onload = async () => {
 			| undefined
 			| HTMLAudioElement;
 		const musicbar = document.getElementById("musicbar");
+		const prebois = document.getElementById("prebois");
 		if (
 			!(
 				electricboi &&
@@ -162,6 +162,7 @@ window.onload = async () => {
 				crit &&
 				windows &&
 				exclamation &&
+				prebois &&
 				boost &&
 				musicbar
 			)
@@ -203,9 +204,8 @@ window.onload = async () => {
 				}
 			}
 		);
-		const getIncrease = () => 
-		q(appliances.overclocking) + 
-		q(appliances.quantumprocessor * 5);
+		const getIncrease = () =>
+			q(appliances.overclocking) + q(appliances.quantumprocessor * 5);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -222,7 +222,11 @@ window.onload = async () => {
 		);
 		setInterval(() => {
 			const elecStr = store.electric.toString();
-			bois.innerText = `Electric Bois: ${elecStr.length > 16 ? `${elecStr.slice(0, 16)}... (${elecStr.length - 16} more)` : elecStr}`;
+			bois.innerText = `Electric Bois: ${
+				elecStr.length > 16
+					? `${elecStr.slice(0, 16)}... (${elecStr.length - 16} more)`
+					: elecStr
+			}`;
 			smallBois.innerText = toWords(store.electric);
 		});
 		const apps: {
@@ -342,19 +346,19 @@ window.onload = async () => {
 				onclick
 			);
 
-			const getCPS = () => {
-				const e =
-					q(appliances.computer) +
-					q(appliances.supercomputer) * q(2) +
-					q(appliances.graphics) * q(10) +
-					q(appliances.cpu) * q(100) +
-					q(appliances.ram) * q(500) +
-					q(appliances.harddrive) * q(1000) +
-					q(appliances.ssd) * q(100000) +
-					q(appliances.swap) * q(1000000) +
-					q(0);
-				return e + (e / q(100)) * getIncrease();
-			};
+		const getCPS = () => {
+			const e =
+				q(appliances.computer) +
+				q(appliances.supercomputer) * q(2) +
+				q(appliances.graphics) * q(10) +
+				q(appliances.cpu) * q(100) +
+				q(appliances.ram) * q(500) +
+				q(appliances.harddrive) * q(1000) +
+				q(appliances.ssd) * q(100000) +
+				q(appliances.swap) * q(1000000) +
+				q(0);
+			return e + (e / q(100)) * getIncrease();
+		};
 		type ApplianceNames = [
 			"computer",
 			"microchip",
@@ -424,21 +428,9 @@ window.onload = async () => {
 			q(2000000),
 			x => x + q(1281550)
 		);
-		addAppliance(
-			"sli",
-			"SLI Bridge",
-			"+10000 Per Click",
-			q(35000000),
-			1.4
-		);
-		addAppliance(
-			"swap",
-			"Swap Space",
-			"+1000000 CPS",
-			q(100_000_000),
-			1.4
-		);
-			// upgrades
+		addAppliance("sli", "SLI Bridge", "+10000 Per Click", q(35000000), 1.4);
+		addAppliance("swap", "Swap Space", "+1000000 CPS", q(100_000_000), 1.4);
+		// upgrades
 		addUpgrade(
 			"overclocking",
 			"CPU Overclocking",
@@ -446,13 +438,7 @@ window.onload = async () => {
 			q(1000),
 			1.8
 		);
-		addUpgrade(
-			"critical",
-			"USB Drive",
-			"+1% Crit Chance",
-			q(6000),
-			5
-		);
+		addUpgrade("critical", "USB Drive", "+1% Crit Chance", q(6000), 5);
 		addUpgrade(
 			"quantumprocessor",
 			"Quantum Processor",
@@ -471,7 +457,7 @@ window.onload = async () => {
 		setTimeout(
 			() =>
 				store.electric ||
-				Swal.fire(
+				Toast.fire(
 					"Click!",
 					"Click the electric boi gif to gain electric bois!",
 					"info"
@@ -490,9 +476,11 @@ window.onload = async () => {
 			cps.innerText = toWords(getCPS());
 			cpc.innerText = toWords(getClicks());
 			crit.innerText = `${getCritical()}%`;
-			crit.title = `There is a ${getCritical()}% chance that a manual click will be worth ${store.crit}x its normal amount!`
+			crit.title = `There is a ${getCritical()}% chance that a manual click will be worth ${
+				store.crit
+			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
-			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`
+			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
 		});
 		setInterval(() => {
 			for (const [k, v] of Object.entries(apps)) {
@@ -524,8 +512,9 @@ window.onload = async () => {
 			t++;
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
 				store.electric += getClicks() * q(store.crit);
-				electricboi.style.filter = "hue-rotate(150deg) saturate(5) brightness(6)";
-				setTimeout(() => electricboi.style.filter = "", 500)
+				electricboi.style.filter =
+					"hue-rotate(150deg) saturate(5) brightness(6)";
+				setTimeout(() => (electricboi.style.filter = ""), 500);
 			} else {
 				store.electric += getClicks();
 			}
@@ -544,12 +533,14 @@ window.onload = async () => {
 			musicbar.append(ne);
 		}
 		const date = new Date();
-		const h = 0//date.getHours();
+		const h = 0; //date.getHours();
 		const d = date.getDay();
 		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
+			electricboi.style.visibility = "none";
 			const { value: pass } = await Swal.fire({
 				title: "Bypass Password",
-				text: "Enter the password if you know it. If you don't, that means you aren't supposed to.",
+				text:
+					"Enter the password if you know it. If you don't, that means you aren't supposed to.",
 				input: "password",
 				allowOutsideClick: false,
 				inputValue: "",
@@ -558,12 +549,13 @@ window.onload = async () => {
 			if (pass !== "get jamed")
 				return await Swal.fire({
 					title: "Access DENIED!",
-					html: "Incorrect password.<br />Do your work now; stop playing games.",
+					html:
+						"Incorrect password.<br />Do your work now; stop playing games.",
 					icon: "error",
 					allowOutsideClick: false,
 					showConfirmButton: false
 				});
-			else
+			else {
 				await Swal.fire({
 					toast: true,
 					text: "Password was correct.",
@@ -571,6 +563,8 @@ window.onload = async () => {
 					position: "bottom",
 					icon: "success"
 				});
+				electricboi.style.visibility = "";
+			}
 		}
 	} catch (err) {
 		console.error(err);
