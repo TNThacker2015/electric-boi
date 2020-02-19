@@ -533,7 +533,7 @@ window.onload = async () => {
 			musicbar.append(ne);
 		}
 		const date = new Date();
-		const h = 0; //date.getHours();
+		const h = date.getHours();
 		const d = date.getDay();
 		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
 			electricboi.style.visibility = "none";
