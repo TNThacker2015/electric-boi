@@ -215,7 +215,9 @@ window.onload = async () => {
 			}
 		);
 		const getIncrease = () =>
-			q(appliances.overclocking) + q(appliances.quantumprocessor * 5);
+			q(appliances.overclocking) 
+			+ q(appliances.quantumprocessor * 5)
+			+ q(appliances.watermelon * 10);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -341,7 +343,7 @@ window.onload = async () => {
 			f.append(e);
 			const g = document.createElement("p");
 			g.classList.add("gp");
-			g.innerText = `${cost} MeltPianos`;
+			g.innerText = `${cost} M-Pianos`;
 			f.append(g);
 			prup.append(f);
 		};
@@ -420,6 +422,7 @@ window.onload = async () => {
 			"critical",
 			"overclocking",
 			"quantumprocessor",
+			"watermelon",
 			"piano"
 		];
 		type Appliances = {
@@ -496,6 +499,13 @@ window.onload = async () => {
 			"+5% Appliance Efficiency",
 			q(1000000),
 			11
+		);
+		addUpgrade(
+			"watermelon",
+			"Watermelon",
+			"+10% Appliance Efficiency",
+			q(2500000),
+			12
 		);
 		setInterval(() => {
 			for (const r of Object.values(apps))
@@ -582,7 +592,7 @@ window.onload = async () => {
 		let dohold = false;
 		setInterval(() => dohold && store.holdEnd > Date.now() && click(), 142.857143)
 		electricboi.addEventListener("mousedown", () => dohold = true)
-		electricboi.addEventListener("mouseup", () => dohold = false)
+		window.addEventListener("mouseup", () => dohold = false)
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
