@@ -23,6 +23,21 @@
 	margin-top: 5px;
 }
 
+#contentright {
+	position: absolute;
+	top: 16px;
+	right: 20px;
+}
+
+#counter {
+	@extend #ele;
+	margin-bottom: 2px;
+	text-align: center;
+	font-weight: normal;
+	background-image: linear-gradient(#88f, #66d);
+	padding: 4px;
+}
+
 img {
 	-webkit-user-drag: none;
 	user-select: none;
@@ -53,9 +68,8 @@ img {
 	height: 400px;
 	overflow-y: auto;
 	overflow-x: auto;
-	position: absolute;
-	top: 20px;
-	right: 20px;
+	margin-top: 52px;
+	margin-bottom: -26px;
 	text-align: center;
 	background-image: linear-gradient(#4d4, #464);
 
@@ -66,7 +80,6 @@ img {
 		top: 0px;
 		background-color: #44d344;
 	}
-
 
 	p {
 		text-align: center;
@@ -148,7 +161,6 @@ img {
 	background-image: linear-gradient(#d66, #633);
 }
 
-
 #prup {
 	@extend #upgrades;
 	left: 28px;
@@ -157,7 +169,6 @@ img {
 	height: 180px;
 	background-image: linear-gradient(#88e, #337);
 }
-
 
 #boicontainer {
 	p {
@@ -300,28 +311,40 @@ img {
 }
 
 #prup {
+	margin-top: 12px;
+	position: relative;
+	top: 0;
+	left: 0;
 	text-align: left;
 	padding: 4px;
 
-	.prebut {
+	.precon {
+		width: fit-content;
+		font-size: 4px;
 		display: inline-block;
-		width: 80px;
-		height: 80px;
-		margin: 4px;
-		transition: filter 0.3s;
-		cursor: pointer;
-
 		text-align: center;
 
-		&:hover {
-			filter: brightness(70%);
-		}
+		.prebut {
+			display: inline-block;
+			width: 80px;
+			height: 80px;
+			margin: 4px;
+			transition: filter 0.2s;
+			cursor: pointer;
 
-		.gp {
-			font-size: 10px;
-			display: flex;
-			margin-left: auto;
-			margin-right: auto;
+			text-align: center;
+
+			&:hover {
+				filter: brightness(70%);
+			}
+
+			&:active {
+				filter: brightness(50%);
+			}
 		}
+	}
+
+	.gp {
+		font-size: 10px;
 	}
 }

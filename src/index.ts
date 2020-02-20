@@ -4,6 +4,7 @@ import env from "./env.json";
 //// import io from "socket.io-client";
 import { inspect } from "util";
 import hrrs from "human-readable-random-string";
+import pms from "pretty-ms";
 const q = BigInt;
 const entries = Object.entries as <T>(
 	o: T
@@ -97,7 +98,7 @@ window.onload = async () => {
 		// if ()
 		const defaults: Partial<Store> = {
 			electric: q(0),
-			pianos: q(0),
+			pianos: q(0)
 		};
 		const store = new Proxy(Object.create(null) as Store, {
 			get(t, k) {
@@ -151,6 +152,7 @@ window.onload = async () => {
 			| HTMLAudioElement;
 		const musicbar = document.getElementById("musicbar");
 		const prebois = document.getElementById("prebois");
+		const counter = document.getElementById("counter");
 		if (
 			!(
 				electricboi &&
@@ -167,7 +169,8 @@ window.onload = async () => {
 				prebois &&
 				boost &&
 				musicbar &&
-				prup
+				prup &&
+				counter
 			)
 		)
 			return (document.body.innerHTML = "err");
@@ -182,6 +185,7 @@ window.onload = async () => {
 			uuid: string;
 			music: string;
 			crit: number;
+			holdEnd: number;
 		}
 
 		if (!store.appliances) store.appliances = {};
@@ -189,6 +193,7 @@ window.onload = async () => {
 		if (!store.electric) store.electric = q(0);
 		if (store.pianos === undefined) store.pianos = q(100);
 		if (!store.crit) store.crit = 10;
+		if (!store.holdEnd) store.holdEnd = 0;
 		if (!store.uuid)
 			store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
@@ -316,24 +321,39 @@ window.onload = async () => {
 				buyElem: buy
 			};
 		};
-		const addPowerup = (hover: string, icon: string, cost: number, onclick: () => any) => {
+		const addPowerup = (
+			hover: string,
+			icon: string,
+			cost: number,
+			onclick: () => any
+		) => {
 			const f = document.createElement("div");
 			const e = document.createElement("img");
-			f.classList.add("prebut");
+			f.classList.add("precon");
 			e.classList.add("prebut");
 			e.src = icon;
 			e.title = hover;
-			e.onclick = onclick;
+			e.onclick = () => {
+				if (store.pianos < cost) return Swal.fire("Insufficient Funds", "You do not have enough Melting Pianos to buy this powerup.", "error")
+				store.pianos -= q(cost);
+				onclick();
+			};
 			f.append(e);
 			const g = document.createElement("p");
 			g.classList.add("gp");
 			g.innerText = `${cost} MeltPianos`;
-			f.append(g)
+			f.append(g);
 			prup.append(f);
-		}
+		};
 		const paths = document.getElementById("paths")!;
-		const de = Array.prototype.slice.call(paths.children).reduce((l, c) => (l[c.id] = c.href, l), {}) as { [i: string]: string }
-		addPowerup("e", de.hold1min, 10, () => console.log(2))
+		const de = Array.prototype.slice
+			.call(paths.children)
+			.reduce((l, c) => ((l[c.id] = c.href), l), {}) as {
+			[i: string]: string;
+		};
+		const autohold = (ms: number) => () => store.holdEnd = Date.now() + ms;
+		addPowerup("1 Minute AutoHolder", de.hold1min, 25, autohold(60000)); // #pow
+		addPowerup("5 Minute AutoHolder", de.hold5min, 100, autohold(60000 * 5));
 		const addAppliance = (
 			name: keyof Appliances,
 			display: string,
@@ -400,7 +420,7 @@ window.onload = async () => {
 			"critical",
 			"overclocking",
 			"quantumprocessor",
-			"piano",
+			"piano"
 		];
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -456,13 +476,6 @@ window.onload = async () => {
 		addAppliance("swap", "Swap Space", "+1000000 CPS", q(100_000_000), 1.4);
 		// upgrades
 		addUpgrade(
-			"piano",
-			"Electric Piano",
-			"+1 Melting Piano Gain",
-			q(10000),
-			7.5
-		);
-		addUpgrade(
 			"overclocking",
 			"CPU Overclocking",
 			"+1% Appliance Efficiency",
@@ -470,6 +483,13 @@ window.onload = async () => {
 			1.8
 		);
 		addUpgrade("critical", "USB Drive", "+1% Crit Chance", q(6000), 5);
+		addUpgrade(
+			"piano",
+			"Electric Piano",
+			"+1 Melting Piano Gain",
+			q(1000000),
+			15.5
+		);
 		addUpgrade(
 			"quantumprocessor",
 			"Quantum Processor",
@@ -484,7 +504,7 @@ window.onload = async () => {
 				r!.countElem.innerText = String(
 					appliances[f as keyof Appliances] || 0
 				);
-		});/*
+		}); /*
 		setTimeout(
 			() =>
 				store.electric ||
@@ -513,6 +533,7 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
+			counter.innerHTML = store.holdEnd > Date.now() ? `<b>Hold To Click</b>: ${pms(store.holdEnd - Date.now())} left` : "";
 		});
 		setInterval(() => {
 			for (const [k, v] of Object.entries(apps)) {
@@ -537,7 +558,7 @@ window.onload = async () => {
 				cpsTimeout();
 			}, 1000);
 		cpsTimeout();
-		electricboi.addEventListener("click", () => {
+		const click = () => {
 			const ex = new Audio(exclamation.src);
 			ex.volume = 0.1;
 			// ex.play();
@@ -556,7 +577,12 @@ window.onload = async () => {
 					"hue-rotate(90deg) saturate(2) brightness(6)";
 				setTimeout(() => (electricboi.style.filter = ""), 500);
 			}
-		});
+		};
+		electricboi.addEventListener("click", click);
+		let dohold = false;
+		setInterval(() => dohold && store.holdEnd > Date.now() && click(), 142.857143)
+		electricboi.addEventListener("mousedown", () => dohold = true)
+		electricboi.addEventListener("mouseup", () => dohold = false)
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
 		////})
@@ -575,7 +601,7 @@ window.onload = async () => {
 		const d = date.getDay();
 		if (h >= 9 && h <= 14 && d >= 1 && d <= 5) {
 			const all = [electricboi, upgrades, powerups];
-			all.map(x => x.style.display = "none");
+			all.map(x => (x.style.display = "none"));
 			const { value: pass } = await Swal.fire({
 				title: "Bypass Password",
 				text:
@@ -595,7 +621,7 @@ window.onload = async () => {
 					showConfirmButton: false
 				});
 			else {
-				all.map(x => x.style.display = "");
+				all.map(x => (x.style.display = ""));
 				await Swal.fire({
 					toast: true,
 					text: "Password was correct.",
