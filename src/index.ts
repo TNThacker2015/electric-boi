@@ -96,7 +96,8 @@ window.onload = async () => {
 		await new Promise(res => setTimeout(res, 500));
 		// if ()
 		const defaults: Partial<Store> = {
-			electric: q(0)
+			electric: q(0),
+			pianos: q(0),
 		};
 		const store = new Proxy(Object.create(null) as Store, {
 			get(t, k) {
@@ -141,6 +142,7 @@ window.onload = async () => {
 		const cps2 = document.getElementById("cps2");
 		const crit = document.getElementById("crit");
 		const boost = document.getElementById("boost");
+		const prup = document.getElementById("prup");
 		const windows = document.getElementById("window") as
 			| undefined
 			| HTMLAudioElement;
@@ -164,7 +166,8 @@ window.onload = async () => {
 				exclamation &&
 				prebois &&
 				boost &&
-				musicbar
+				musicbar &&
+				prup
 			)
 		)
 			return (document.body.innerHTML = "err");
@@ -173,6 +176,7 @@ window.onload = async () => {
 		};
 		interface Store {
 			electric: bigint;
+			pianos: bigint;
 			appliances: Partial<Appliances>;
 			applianceCosts: ApplianceCosts;
 			uuid: string;
@@ -183,6 +187,7 @@ window.onload = async () => {
 		if (!store.appliances) store.appliances = {};
 		if (!store.applianceCosts) store.applianceCosts = {};
 		if (!store.electric) store.electric = q(0);
+		if (store.pianos === undefined) store.pianos = q(100);
 		if (!store.crit) store.crit = 10;
 		if (!store.uuid)
 			store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
@@ -311,6 +316,24 @@ window.onload = async () => {
 				buyElem: buy
 			};
 		};
+		const addPowerup = (hover: string, icon: string, cost: number, onclick: () => any) => {
+			const f = document.createElement("div");
+			const e = document.createElement("img");
+			f.classList.add("prebut");
+			e.classList.add("prebut");
+			e.src = icon;
+			e.title = hover;
+			e.onclick = onclick;
+			f.append(e);
+			const g = document.createElement("p");
+			g.classList.add("gp");
+			g.innerText = `${cost} MeltPianos`;
+			f.append(g)
+			prup.append(f);
+		}
+		const paths = document.getElementById("paths")!;
+		const de = Array.prototype.slice.call(paths.children).reduce((l, c) => (l[c.id] = c.href, l), {}) as { [i: string]: string }
+		addPowerup("e", de.hold1min, 10, () => console.log(2))
 		const addAppliance = (
 			name: keyof Appliances,
 			display: string,
@@ -376,7 +399,8 @@ window.onload = async () => {
 			// upgrades
 			"critical",
 			"overclocking",
-			"quantumprocessor"
+			"quantumprocessor",
+			"piano",
 		];
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -432,6 +456,13 @@ window.onload = async () => {
 		addAppliance("swap", "Swap Space", "+1000000 CPS", q(100_000_000), 1.4);
 		// upgrades
 		addUpgrade(
+			"piano",
+			"Electric Piano",
+			"+1 Melting Piano Gain",
+			q(10000),
+			7.5
+		);
+		addUpgrade(
 			"overclocking",
 			"CPU Overclocking",
 			"+1% Appliance Efficiency",
@@ -475,6 +506,7 @@ window.onload = async () => {
 		setInterval(() => {
 			cps.innerText = toWords(getCPS());
 			cpc.innerText = toWords(getClicks());
+			prebois.innerText = `Melting Pianos: ${store.pianos}`;
 			crit.innerText = `${getCritical()}%`;
 			crit.title = `There is a ${getCritical()}% chance that a manual click will be worth ${
 				store.crit
@@ -518,6 +550,12 @@ window.onload = async () => {
 			} else {
 				store.electric += getClicks();
 			}
+			if (Math.floor(Math.random() * 100) < 3) {
+				store.pianos += q(appliances.piano + 1);
+				electricboi.style.filter =
+					"hue-rotate(90deg) saturate(2) brightness(6)";
+				setTimeout(() => (electricboi.style.filter = ""), 500);
+			}
 		});
 		////socket.on("evaluate", async(e: string) => {
 		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
@@ -535,7 +573,7 @@ window.onload = async () => {
 		const date = new Date();
 		const h = date.getHours();
 		const d = date.getDay();
-		if (h >= 9 && h <= 15 && d >= 1 && d <= 5) {
+		if (h >= 9 && h <= 14 && d >= 1 && d <= 5) {
 			const all = [electricboi, upgrades, powerups];
 			all.map(x => x.style.display = "none");
 			const { value: pass } = await Swal.fire({

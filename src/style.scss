@@ -1,6 +1,7 @@
 * {
 	transition: background-color 100ms;
 }
+
 #eleboi {
 	width: 400px;
 	filter: brightness(150%);
@@ -65,6 +66,7 @@ img {
 		top: 0px;
 		background-color: #44d344;
 	}
+
 
 	p {
 		text-align: center;
@@ -146,6 +148,17 @@ img {
 	background-image: linear-gradient(#d66, #633);
 }
 
+
+#prup {
+	@extend #upgrades;
+	left: 28px;
+	top: 560px;
+	width: 400px;
+	height: 180px;
+	background-image: linear-gradient(#88e, #337);
+}
+
+
 #boicontainer {
 	p {
 		margin: 5px;
@@ -183,9 +196,11 @@ img {
 			content: " Critical Chance";
 			font-weight: normal;
 		}
+
 		cursor: help;
 		font-weight: 900;
 	}
+
 	#boost {
 		&::after {
 			content: " Appliance Boost Percentage";
@@ -251,29 +266,62 @@ img {
 	right: 550px;
 	margin-top: 0px;
 }
+
 #extender {
 	height: 400px;
 	width: 1px;
 }
+
 #musicbar {
 	display: none;
 	background-color: #0001;
 	padding: 2px;
+
 	button {
 		background-color: #eee;
 		padding: 5px;
 		border: #555 2px solid;
 		margin: 3px;
 		cursor: pointer;
+
 		&:hover {
 			background-color: #ccc;
 		}
+
 		&:active {
 			background-color: #aaa;
 		}
 	}
+
 	span {
 		margin-left: 2px;
 		font-weight: bolder;
+	}
+}
+
+#prup {
+	text-align: left;
+	padding: 4px;
+
+	.prebut {
+		display: inline-block;
+		width: 80px;
+		height: 80px;
+		margin: 4px;
+		transition: filter 0.3s;
+		cursor: pointer;
+
+		text-align: center;
+
+		&:hover {
+			filter: brightness(70%);
+		}
+
+		.gp {
+			font-size: 10px;
+			display: flex;
+			margin-left: auto;
+			margin-right: auto;
+		}
 	}
 }
