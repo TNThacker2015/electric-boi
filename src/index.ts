@@ -191,7 +191,7 @@ window.onload = async () => {
 		if (!store.appliances) store.appliances = {};
 		if (!store.applianceCosts) store.applianceCosts = {};
 		if (!store.electric) store.electric = q(0);
-		if (store.pianos === undefined) store.pianos = q(100);
+		if (store.pianos === undefined) store.pianos = q(20);
 		if (!store.crit) store.crit = 10;
 		if (!store.holdEnd) store.holdEnd = 0;
 		if (!store.uuid)
