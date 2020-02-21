@@ -365,7 +365,6 @@ window.onload = async () => {
 					<br>
 					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`
 				,
-				icon: "info",
 				allowOutsideClick: false
 			})
 		})
@@ -559,7 +558,7 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
-			counter.innerHTML = store.holdEnd > Date.now() ? `<b>Hold To Click</b>: ${pms(store.holdEnd - Date.now())} left` : "";
+			counter.innerHTML = store.holdEnd > Date.now() ? `<b>Hold To Click</b>: ${pms(store.holdEnd - Date.now())} left` : "No Effects Applied";
 		});
 		setInterval(() => {
 			for (const [k, v] of Object.entries(apps)) {
