@@ -85,6 +85,24 @@ img {
 #curvy {
 	border-radius: 15px;
 }
+#credits {
+	@extend #curvy;
+	font-weight: 600;
+	outline: 0;
+	margin-top: 30px;
+	background-color: #eee;
+	border: #222 4px solid;
+	padding: 3px 6px;
+	font-size: 1.5em;
+	font-family: "Nunito";
+	cursor: pointer;
+	&:hover {
+		background-color: #bbb;
+	}
+	&:active {
+		background-color: #999;
+	}
+}
 #upgrades {
 	@extend #curvy;
 	border: black 5px solid;
@@ -92,7 +110,8 @@ img {
 	height: 400px;
 	overflow-y: auto;
 	overflow-x: auto;
-	margin-top: 22px;
+	margin-top: 55px;
+	margin-bottom: -20px;
 	text-align: center;
 	background-image: linear-gradient(#4d4, #464);
 
@@ -374,4 +393,8 @@ img {
 	.gp {
 		font-size: 10px;
 	}
+}
+b,
+strong {
+	font-weight: 800;
 }

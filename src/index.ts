@@ -5,7 +5,9 @@ import env from "./env.json";
 import { inspect } from "util";
 import hrrs from "human-readable-random-string";
 import pms from "pretty-ms";
+import md from "markdown-it";
 const q = BigInt;
+const markdown = md();
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
@@ -144,6 +146,7 @@ window.onload = async () => {
 		const crit = document.getElementById("crit");
 		const boost = document.getElementById("boost");
 		const prup = document.getElementById("prup");
+		const credits = document.getElementById("credits");
 		const windows = document.getElementById("window") as
 			| undefined
 			| HTMLAudioElement;
@@ -170,7 +173,8 @@ window.onload = async () => {
 				boost &&
 				musicbar &&
 				prup &&
-				counter
+				counter &&
+				credits
 			)
 		)
 			return (document.body.innerHTML = "err");
@@ -353,6 +357,18 @@ window.onload = async () => {
 			.reduce((l, c) => ((l[c.id] = c.href), l), {}) as {
 			[i: string]: string;
 		};
+		credits.addEventListener("click", async() => {
+			await Swal.fire({
+				title: "Credits",
+				html: 
+					`<b>Created and Tested by</b>: William, James, LJ
+					<br>
+					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`
+				,
+				icon: "info",
+				allowOutsideClick: false
+			})
+		})
 		const autohold = (ms: number) => () => store.holdEnd = Date.now() + ms;
 		addPowerup("1 Minute AutoHolder", de.hold1min, 25, autohold(60000)); // #pow
 		addPowerup("5 Minute AutoHolder", de.hold5min, 100, autohold(60000 * 5));
