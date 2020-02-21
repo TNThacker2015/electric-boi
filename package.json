@@ -33,7 +33,7 @@
 		"babel-core": "^6.26.3",
 		"babel-preset-env": "^1.7.0",
 		"sass": "^1.25.0",
-		"typescript": "^3.7.5"
+		"typescript": "^3.8.2"
 	},
 	"keywords": []
 }

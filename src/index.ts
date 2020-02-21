@@ -361,7 +361,7 @@ window.onload = async () => {
 			await Swal.fire({
 				title: "Credits",
 				html: 
-					`<b>Created and Tested by</b>: William, James, LJ
+					`<b>Created and Tested by</b>: William, James, LJ - Div 8
 					<br>
 					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`
 				,
