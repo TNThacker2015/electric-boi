@@ -1,2 +1,2 @@
-import { execSync } from "child_process";
-execSync("yarn start");
+import { spawnSync } from "child_process";
+const spawned = spawnSync("yarn start");
