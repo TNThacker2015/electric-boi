@@ -55,7 +55,8 @@ window.onload = async () => {
 			document.createElement("link")) as HTMLLinkElement;
 		link.type = "image/x-icon";
 		link.rel = "shortcut icon";
-		link.href = (document.getElementById("ico") as HTMLLinkElement).href;
+		const ico = (document.getElementById("ico") as HTMLLinkElement);
+		if (ico) link.href = ico.href;
 		document.head.append(link);
 
 		let lastEval = 0;
