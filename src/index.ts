@@ -178,7 +178,7 @@ window.onload = async () => {
 				credits
 			)
 		)
-			return (document.body.innerHTML = "err");
+			return console.log("not foudn");
 		type ApplianceCosts = {
 			[e in keyof Partial<Appliances>]: bigint;
 		};
