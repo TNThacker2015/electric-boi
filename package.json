@@ -3,7 +3,7 @@
 	"name": "electric-boi",
 	"version": "1.0.0",
 	"description": "",
-	"main": "start.js",
+	"main": "start.sh",
 	"scripts": {
 		"start": "yarn build && yarn server",
 		"starrt": "parcel src/index.html src/admin/index.html --open",
