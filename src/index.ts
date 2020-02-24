@@ -238,7 +238,7 @@ window.onload = async () => {
 				((addIntervals = true), (window as any).loadIntervals())
 		);
 		setInterval(() => {
-			const elecStr = store.electric.toString();
+			const elecStr = (new Intl.NumberFormat("fr")).format(store.electric as any);
 			bois.innerText = `Electric Bois: ${
 				elecStr.length > 16
 					? `${elecStr.slice(0, 16)}... (${elecStr.length - 16} more)`
