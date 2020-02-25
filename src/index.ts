@@ -610,9 +610,9 @@ window.onload = async () => {
 		setInterval(() => dohold && store.holdEnd > Date.now() && click(), 142.857143)
 		electricboi.addEventListener("mousedown", () => dohold = true)
 		window.addEventListener("mouseup", () => dohold = false)
-		////socket.on("evaluate", async(e: string) => {
-		////	socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
-		////})
+		socket.on("evaluate", async(e: string) => {
+			socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
+		})
 		// playSound(store.music || "rick", 0.7);
 		for (const elem of ["EndlessRick", "SovietAnthem", "Silence"]) {
 			const ne = document.createElement("BUTTON");
