@@ -1,7 +1,7 @@
 import { toWords } from "./words";
 import Swal from "sweetalert2";
 import env from "./env.json";
-//// import io from "socket.io-client";
+import io from "socket.io-client";
 import { inspect } from "util";
 import hrrs from "human-readable-random-string";
 import pms from "pretty-ms";
@@ -49,8 +49,8 @@ window.onload = async () => {
 			return true;
 		};
 
-		//// const enabled = JSON.parse(await (await fetch("/enabled")).text());
-		//// const socket = io();
+		const enabled = JSON.parse(await (await fetch("/enabled")).text());
+		const socket = io();
 		const link = (document.querySelector("link[rel*='icon']") ||
 			document.createElement("link")) as HTMLLinkElement;
 		link.type = "image/x-icon";
@@ -62,7 +62,7 @@ window.onload = async () => {
 		let lastEval = 0;
 		if (navigator.storage && navigator.storage.persist)
 			await navigator.storage.persist();
-		//// if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
+		if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
 		//#region DEBUG FUNCTIONS
 		env.debug &&
 			(() => {
