@@ -237,6 +237,7 @@ window.onload = async () => {
 				last + 4000 < Date.now() &&
 				((addIntervals = true), (window as any).loadIntervals())
 		);
+		electricboi.oncontextmenu = e => e.preventDefault()
 		setInterval(() => {
 			const elecStr = (new Intl.NumberFormat("fr")).format(store.electric as any);
 			bois.innerText = `Electric Bois: ${
