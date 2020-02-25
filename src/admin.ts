@@ -19,6 +19,7 @@ window.onload = async () => {
 		title: "Admin Password",
 		input: "password"
 	});
+	if (!pass) return;
 	const hashed = JSON.stringify({
 		data: createHash("sha512")
 			.update(pass)
