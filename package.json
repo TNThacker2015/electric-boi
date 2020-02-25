@@ -5,9 +5,8 @@
 	"description": "",
 	"main": "index.html",
 	"scripts": {
-		"ostart": "yarn build && yarn server",
+		"start": "yarn build && yarn server",
 		"starrt": "parcel src/index.html --open",
-		"start": "node server",
 		"build": "parcel build index.html src/admin/index.html -d build",
 		"server": "node -r esm -r ts-node/register server.ts"
 	},
