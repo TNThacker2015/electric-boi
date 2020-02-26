@@ -6,14 +6,22 @@ import { inspect } from "util";
 import hrrs from "human-readable-random-string";
 import pms from "pretty-ms";
 import md from "markdown-it";
+import { json } from "express";
 const q = BigInt;
 const markdown = md();
 const entries = Object.entries as <T>(
 	o: T
 ) => [Extract<keyof T, string>, T[keyof T]][];
+(window as any).Swal = Swal;
 let addIntervals = true;
 let last = Date.now();
 const Toast = Swal.mixin({ toast: true, position: "bottom" });
+const Confirm = Swal.mixin({
+	showConfirmButton: true,
+	showCancelButton: true,
+	cancelButtonText: "No",
+	confirmButtonText: "Yes"
+});
 localStorage.openpages = Date.now();
 window.addEventListener(
 	"storage",
@@ -55,14 +63,16 @@ window.onload = async () => {
 			document.createElement("link")) as HTMLLinkElement;
 		link.type = "image/x-icon";
 		link.rel = "shortcut icon";
-		const ico = (document.getElementById("ico") as HTMLLinkElement);
+		const ico = document.getElementById("ico") as HTMLLinkElement;
 		if (ico) link.href = ico.href;
 		document.head.append(link);
 
 		let lastEval = 0;
 		if (navigator.storage && navigator.storage.persist)
 			await navigator.storage.persist();
-		if (!enabled) return document.body.innerHTML = "<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>"
+		if (!enabled)
+			return (document.body.innerHTML =
+				"<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>");
 		//#region DEBUG FUNCTIONS
 		env.debug &&
 			(() => {
@@ -157,6 +167,9 @@ window.onload = async () => {
 		const musicbar = document.getElementById("musicbar");
 		const prebois = document.getElementById("prebois");
 		const counter = document.getElementById("counter");
+		const save = document.getElementById("save");
+		const load = document.getElementById("load");
+		const uuid = document.getElementById("uuid");
 		if (
 			!(
 				electricboi &&
@@ -175,7 +188,10 @@ window.onload = async () => {
 				musicbar &&
 				prup &&
 				counter &&
-				credits
+				credits &&
+				save &&
+				load &&
+				uuid
 			)
 		)
 			return console.log("not foudn");
@@ -199,10 +215,11 @@ window.onload = async () => {
 		if (store.pianos === undefined) store.pianos = q(20);
 		if (!store.crit) store.crit = 10;
 		if (!store.holdEnd) store.holdEnd = 0;
-		if (!store.uuid)
-			store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
+		const setUUID = () =>
+			(store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
-				.padStart(3, "0")}`;
+				.padStart(3, "0")}`);
+		if (!store.uuid) setUUID();
 		const applianceCosts = new Proxy(
 			Object.create(null) as ApplianceCosts,
 			{
@@ -220,9 +237,9 @@ window.onload = async () => {
 			}
 		);
 		const getIncrease = () =>
-			q(appliances.overclocking) 
-			+ q(appliances.quantumprocessor * 5)
-			+ q(appliances.watermelon * 10);
+			q(appliances.overclocking) +
+			q(appliances.quantumprocessor * 5) +
+			q(appliances.watermelon * 10);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -237,9 +254,11 @@ window.onload = async () => {
 				last + 4000 < Date.now() &&
 				((addIntervals = true), (window as any).loadIntervals())
 		);
-		electricboi.oncontextmenu = e => e.preventDefault()
+		electricboi.oncontextmenu = e => e.preventDefault();
 		setInterval(() => {
-			const elecStr = (new Intl.NumberFormat("fr")).format(store.electric as any);
+			const elecStr = new Intl.NumberFormat("fr").format(
+				store.electric as any
+			);
 			bois.innerText = `Electric Bois: ${
 				elecStr.length > 16
 					? `${elecStr.slice(0, 16)}... (${elecStr.length - 16} more)`
@@ -342,7 +361,12 @@ window.onload = async () => {
 			e.src = icon;
 			e.title = hover;
 			e.onclick = () => {
-				if (store.pianos < cost) return Swal.fire("Insufficient Funds", "You do not have enough Melting Pianos to buy this powerup.", "error")
+				if (store.pianos < cost)
+					return Swal.fire(
+						"Insufficient Funds",
+						"You do not have enough Melting Pianos to buy this powerup.",
+						"error"
+					);
 				store.pianos -= q(cost);
 				onclick();
 			};
@@ -359,20 +383,24 @@ window.onload = async () => {
 			.reduce((l, c) => ((l[c.id] = c.href), l), {}) as {
 			[i: string]: string;
 		};
-		credits.addEventListener("click", async() => {
+		credits.addEventListener("click", async () => {
 			await Swal.fire({
 				title: "Credits",
-				html: 
-					`<b>Created and Tested by</b>: William, James, LJ - Div 8
+				html: `<b>Created and Tested by</b>: William, James, LJ - Div 8
 					<br>
-					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`
-				,
+					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`,
 				allowOutsideClick: false
-			})
-		})
-		const autohold = (ms: number) => () => store.holdEnd = Date.now() + ms;
+			});
+		});
+		const autohold = (ms: number) => () =>
+			(store.holdEnd = Date.now() + ms);
 		addPowerup("1 Minute AutoHolder", de.hold1min, 25, autohold(60000)); // #pow
-		addPowerup("5 Minute AutoHolder", de.hold5min, 100, autohold(60000 * 5));
+		addPowerup(
+			"5 Minute AutoHolder",
+			de.hold5min,
+			100,
+			autohold(60000 * 5)
+		);
 		const addAppliance = (
 			name: keyof Appliances,
 			display: string,
@@ -560,8 +588,14 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
-			counter.innerHTML = store.holdEnd > Date.now() ? `<b>Hold To Click</b>: ${pms(store.holdEnd - Date.now())} left` : "No Effects Applied";
+			counter.innerHTML =
+				store.holdEnd > Date.now()
+					? `<b>Hold To Click</b>: ${pms(
+							store.holdEnd - Date.now()
+					  )} left`
+					: "No Effects Applied";
 		});
+		setInterval(() => (uuid.innerText = store.uuid), 5000);
 		setInterval(() => {
 			for (const [k, v] of Object.entries(apps)) {
 				if (store.electric < v!.cost) {
@@ -607,13 +641,96 @@ window.onload = async () => {
 		};
 		electricboi.addEventListener("click", click);
 		let dohold = false;
-		setInterval(() => dohold && store.holdEnd > Date.now() && click(), 142.857143)
-		electricboi.addEventListener("mousedown", () => dohold = true)
-		window.addEventListener("mouseup", () => dohold = false)
-		socket.on("evaluate", async(e: string) => {
+		setInterval(
+			() => dohold && store.holdEnd > Date.now() && click(),
+			142.857143
+		);
+		electricboi.addEventListener("mousedown", () => (dohold = true));
+		window.addEventListener("mouseup", () => (dohold = false));
+		socket.on("evaluate", async (e: string) => {
 			socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
-		})
+		});
 		// playSound(store.music || "rick", 0.7);
+		const getUUID = async () => {
+			const { value } = await Swal.fire({
+				title: "Enter your UUID.",
+				input: "text",
+				inputPlaceholder: "UUID",
+				showCancelButton: true
+			});
+			if (!value) return;
+			store.uuid = value;
+			await Swal.fire(
+				"Success!",
+				`Your uuid has been changed to ${value}!`,
+				"success"
+			);
+		};
+		const getName = async () =>
+			await (
+				await fetch(`/name?id=${encodeURIComponent(store.uuid)}`)
+			).text();
+		const confirmUUID = async () =>
+			(
+				await Confirm.fire(
+					"UUID Confirmation",
+					`Your UUID is ${
+						store.uuid
+					} (Name: ${await getName()}), is that correct?`
+				)
+			).value
+				? true
+				: getUUID();
+		load.addEventListener("click", async () => {
+			if (!store.uuid) setUUID();
+			if (!(await confirmUUID())) return;
+			const dat: Store = await (
+				await fetch(`/account?id=${encodeURIComponent(store.uuid)}`)
+			).json();
+			if (!dat)
+				return Swal.fire(
+					`No Save Data`,
+					"No save data was found. Have you saved yet?",
+					"error"
+				);
+			if (
+				!(await Confirm.fire(
+					`Load Confirmation`,
+					markdown.render(`The load data:\n
+**Electric Bois**: ${dat.electric}\n
+**Appliances**: ${Object.values(dat.appliances).reduce((a, b) => a! + b!)}\n
+**Melting Pianos**: ${dat.pianos}\n
+Are you sure you want to load this save?
+`)
+				))
+			)
+				return;
+			for (const [k, v] of entries(dat)) localStorage[k] = v;
+			return Swal.fire(
+				"Save Data Loaded",
+				"The save data for your account was successfully loaded."
+			);
+		});
+		save.addEventListener("click", async () => {
+			if (!store.uuid) setUUID();
+			if (!(await confirmUUID())) return;
+			const r = await fetch("/account", {
+				method: "POST",
+				body: JSON.stringify({
+					content: localStorage,
+					id: store.uuid
+				}),
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+			if (r.ok)
+				await Swal.fire(
+					"Saved!",
+					`Your data was saved in uuid ${store.uuid}.`,
+					"success"
+				);
+		});
 		for (const elem of ["EndlessRick", "SovietAnthem", "Silence"]) {
 			const ne = document.createElement("BUTTON");
 			ne.onclick = () => (
@@ -622,6 +739,26 @@ window.onload = async () => {
 			);
 			ne.innerText = elem;
 			musicbar.append(ne);
+		}
+		if (!(await getName())) {
+			const { value: name } = await Swal.fire({
+				input: "text",
+				inputPlaceholder: "Jorge Highpressurevacuum",
+				title: "Please enter your name.",
+				text:
+					"This will be for account reference. Do not enter your last name."
+			});
+			if (name)
+				await fetch(`/name`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						id: store.uuid,
+						name
+					})
+				});
 		}
 		const date = new Date();
 		const h = date.getHours();

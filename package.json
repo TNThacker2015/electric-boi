@@ -5,7 +5,8 @@
 	"description": "",
 	"main": "index.html",
 	"scripts": {
-		"start": "yarn build && yarn server",
+		"bstart": "yarn build && yarn server",
+		"start": "yarn server",
 		"starrt": "parcel src/index.html --open",
 		"build": "parcel build index.html src/admin/admin.html -d build",
 		"server": "node -r esm -r ts-node/register server.ts"
@@ -24,6 +25,7 @@
 		"parcel-bundler": "^1.12.4",
 		"postcss-modules": "^1.5.0",
 		"pretty-ms": "^6.0.0",
+		"quick.db": "^7.0.0-b22",
 		"socket.io": "^2.3.0",
 		"socket.io-client": "^2.3.0",
 		"sweetalert2": "^9.7.2",

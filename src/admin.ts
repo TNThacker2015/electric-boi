@@ -51,19 +51,19 @@ window.onload = async () => {
 	const socket = io();
 	socket.on("evaled", (e: any) => {
 		const p = document.createElement("P");
-		p.innerText = e
-		responses.append(p)}
-	);
+		p.innerText = e;
+		responses.append(p);
+	});
 	const updateCon = (n: string[]) => {
 		while (adminnum.firstChild) adminnum.removeChild(adminnum.firstChild);
 		for (const r of n) {
 			const p = document.createElement("P");
 			p.innerText = r;
 			if (r === socket.id) p.classList.add("self");
-			adminnum.append(p)
+			adminnum.append(p);
 		}
-	}
-	socket.on("changed", updateCon)
+	};
+	socket.on("changed", updateCon);
 	updateCon(await (await fetch("/socks")).json());
 	const addTitle = (e: string, weight = "bolder") => {
 		const ee = document.createElement("P");

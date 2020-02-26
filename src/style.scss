@@ -94,6 +94,7 @@ img {
 #credits {
 	@extend #curvy;
 	font-weight: 600;
+	margin: 20px 3px;
 	outline: 0;
 	margin-top: 30px;
 	background-color: #eee;
@@ -111,7 +112,26 @@ img {
 		background-color: #999;
 	}
 }
-
+#save {
+	@extend #credits;
+	background-color: #ff9;
+	&:hover {
+		background-color: #bb9;
+	}
+	&:active {
+		background-color: #885;
+	}
+}
+#load {
+	@extend #save;
+	background-color: #bbf;
+	&:hover {
+		background-color: #99f;
+	}
+	&:active {
+		background-color: #77a;
+	}
+}
 #upgrades {
 	@extend #curvy;
 	border: black 5px solid;
@@ -409,4 +429,11 @@ img {
 b,
 strong {
 	font-weight: 800;
+}
+#uuid {
+	&:before {
+		content: "UUID: ";
+		font-weight: normal;
+	}
+	font-weight: bolder;
 }
