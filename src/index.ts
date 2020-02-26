@@ -684,15 +684,20 @@ window.onload = async () => {
 		load.addEventListener("click", async () => {
 			if (!store.uuid) setUUID();
 			if (!(await confirmUUID())) return;
-			const dat: Store = await (
-				await fetch(`/account?id=${encodeURIComponent(store.uuid)}`)
-			).json();
-			if (!dat)
+			if (
+				!(await (
+					await fetch(`/account?id=${encodeURIComponent(store.uuid)}`)
+				).text())
+			)
 				return Swal.fire(
 					`No Save Data`,
 					"No save data was found. Have you saved yet?",
 					"error"
 				);
+			const dat: Store = await (
+				await fetch(`/account?id=${encodeURIComponent(store.uuid)}`)
+			).json();
+
 			if (
 				!(await Confirm.fire(
 					`Load Confirmation`,
