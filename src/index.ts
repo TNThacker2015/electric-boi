@@ -780,7 +780,7 @@ Are you sure you want to load this save?
 				inputValue: "",
 				icon: "info"
 			});
-			if (pass !== "get jamed")
+			if (pass !== "james is pass")
 				return await Swal.fire({
 					title: "Access DENIED!",
 					html:
