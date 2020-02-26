@@ -707,7 +707,7 @@ window.onload = async () => {
 **Melting Pianos**: ${dat.pianos}\n
 Are you sure you want to load this save?
 `)
-				))
+				)).value
 			)
 				return;
 			for (const [k, v] of entries(dat)) localStorage[k] = v;
