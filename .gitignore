@@ -3,3 +3,4 @@ dist
 .git
 .cache
 build
+*.sqlite
