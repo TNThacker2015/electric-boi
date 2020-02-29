@@ -7,6 +7,7 @@ import hrrs from "human-readable-random-string";
 import pms from "pretty-ms";
 import md from "markdown-it";
 import { json } from "express";
+import { stat } from "fs";
 const q = BigInt;
 const markdown = md();
 const entries = Object.entries as <T>(
@@ -74,47 +75,56 @@ window.onload = async () => {
 			return (document.body.innerHTML =
 				"<div style='text-align:center'><h1>Electric Boi Clicker is disabled.</h1><p>lol</p></div>");
 		//#region DEBUG FUNCTIONS
-		env.debug &&
-			(() => {
-				if (document.getElementById("debugbuttons")) return;
-				const d = document.createElement("DIV");
-				d.innerHTML = "<b>Debug Functions</b>: ";
-				d.id = "debugbuttons";
-				document.body.prepend(d);
-				const createDebug = (
-					name: string,
-					func: (this: HTMLElement, ev: MouseEvent) => any
-				) => {
-					const e = document.createElement("BUTTON");
-					e.addEventListener("click", func);
-					e.innerText = name;
-					d.append(e);
-				};
-				createDebug(
-					"clear localstorage",
-					() => (localStorage.clear(), location.reload())
-				);
-				createDebug(
-					"reset costs",
-					() => (
-						localStorage.removeItem("applianceCosts"),
-						location.reload()
-					)
-				);
-				createDebug(
-					"+1000000",
-					() => (localStorage.electric = "1000000")
-				);
-			})();
+		const debug = () => {
+			env.debug &&
+				(() => {
+					if (document.getElementById("debugbuttons")) return;
+					const d = document.createElement("DIV");
+					d.innerHTML = "<b>Debug Functions</b>: ";
+					d.id = "debugbuttons";
+					document.body.prepend(d);
+					const createDebug = (
+						name: string,
+						func: (this: HTMLElement, ev: MouseEvent) => any
+					) => {
+						const e = document.createElement("BUTTON");
+						e.addEventListener("click", func);
+						e.innerText = name;
+						d.append(e);
+					};
+					createDebug(
+						"clear localstorage",
+						() => (localStorage.clear(), location.reload())
+					);
+					createDebug(
+						"reset costs",
+						() => (
+							localStorage.removeItem("applianceCosts"),
+							location.reload()
+						)
+					);
+					createDebug(
+						"+1000000",
+						() => (localStorage.electric = "1000000")
+					);
+					createDebug(
+						"+50m",
+						() => (localStorage.electric = "50000000")
+					);
+				})();
+		};
+		debug();
 		//#endregion
+		(window as any).debugOn = (date: number) => (date === Date.now()) && ((env.debug = 1), debug())
 		await new Promise(res => setTimeout(res, 500));
 		// if ()
 		const defaults: Partial<Store> = {
 			electric: q(0),
-			pianos: q(0)
+			pianos: q(0),
+			elecTotal: q(0)
 		};
 		const store = new Proxy(Object.create(null) as Store, {
-			get(t, k) {
+			get(t, k: keyof Store) {
 				const val = localStorage[k as any];
 				if (!val) return;
 				if (typeof defaults[k as keyof Store] === "bigint")
@@ -125,7 +135,11 @@ window.onload = async () => {
 					return val;
 				}
 			},
-			set(t, k, v) {
+			set<T extends keyof Store>(t: Store, k: T, v: Store[T]) {
+				if (k === "electric" && v > 0) {
+					const diff = (v as bigint) - store.electric;
+					if (diff > 0) store["elecTotal"] += diff;
+				}
 				try {
 					localStorage[k as any] =
 						typeof v === "string" ? v : JSON.stringify(v);
@@ -170,6 +184,7 @@ window.onload = async () => {
 		const save = document.getElementById("save");
 		const load = document.getElementById("load");
 		const uuid = document.getElementById("uuid");
+		const stats = document.getElementById("stats");
 		if (
 			!(
 				electricboi &&
@@ -191,7 +206,8 @@ window.onload = async () => {
 				credits &&
 				save &&
 				load &&
-				uuid
+				uuid &&
+				stats
 			)
 		)
 			return console.log("not foudn");
@@ -207,14 +223,19 @@ window.onload = async () => {
 			music: string;
 			crit: number;
 			holdEnd: number;
+			clicks: number;
+			elecTotal: bigint;
 		}
 
 		if (!store.appliances) store.appliances = {};
 		if (!store.applianceCosts) store.applianceCosts = {};
+		if (store.elecTotal === undefined)
+			store.elecTotal = store.electric || q(0);
 		if (!store.electric) store.electric = q(0);
 		if (store.pianos === undefined) store.pianos = q(20);
 		if (!store.crit) store.crit = 10;
 		if (!store.holdEnd) store.holdEnd = 0;
+		if (!store.clicks) store.clicks = 0;
 		const setUUID = () =>
 			(store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
@@ -239,7 +260,9 @@ window.onload = async () => {
 		const getIncrease = () =>
 			q(appliances.overclocking) +
 			q(appliances.quantumprocessor * 5) +
-			q(appliances.watermelon * 10);
+			q(appliances.watermelon * 10) +
+			q(appliances.overused * 50) +
+			q(0);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
 			addIntervals && (intervaled = true);
@@ -348,6 +371,17 @@ window.onload = async () => {
 				buyElem: buy
 			};
 		};
+		const statFuncs: (() => unknown)[] = [];
+		setInterval(() => statFuncs.map(x => x()));
+		const addStats = (name: string, value: () => unknown) => {
+			const stat = document.createElement("p");
+			stat.classList.add("stat");
+			stat.innerText = `${name}: `;
+			const span = document.createElement("span");
+			stat.append(span);
+			statFuncs.push(() => (span.innerText = String(value())));
+			stats.append(stat);
+		};
 		const addPowerup = (
 			hover: string,
 			icon: string,
@@ -435,7 +469,9 @@ window.onload = async () => {
 				costMult,
 				onclick
 			);
-
+		addStats("Total Electric Bois", () => toWords(store.elecTotal));
+		addStats("Clicks", () => store.clicks);
+		const pow10 = (n: number, mul = 1) => q(10) ** q(n) * q(mul);
 		const getCPS = () => {
 			const e =
 				q(appliances.computer) +
@@ -446,6 +482,8 @@ window.onload = async () => {
 				q(appliances.harddrive) * q(1000) +
 				q(appliances.ssd) * q(100000) +
 				q(appliances.swap) * q(1000000) +
+				q(appliances.system32) * pow10(6, 50) +
+				q(appliances.keyboard) * pow10(6, 250) +
 				q(0);
 			return e + (e / q(100)) * getIncrease();
 		};
@@ -463,12 +501,17 @@ window.onload = async () => {
 			"motherboard",
 			"sli",
 			"swap",
+			"task",
+			"system32",
+			"windows10",
+			"keyboard",
 			// upgrades
 			"critical",
 			"overclocking",
 			"quantumprocessor",
 			"watermelon",
-			"piano"
+			"piano",
+			"overused",
 		];
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -520,8 +563,36 @@ window.onload = async () => {
 			q(2000000),
 			x => x + q(1281550)
 		);
-		addAppliance("sli", "SLI Bridge", "+10000 Per Click", q(35000000), 1.4);
+		addAppliance("sli", "SLI Bridge", "+500000 Per Click", q(35000000), 1.4);
 		addAppliance("swap", "Swap Space", "+1000000 CPS", q(100_000_000), 1.4);
+		addAppliance(
+			"task",
+			"Task Manager",
+			"+1500000 Per Click",
+			pow10(7, 25),
+			1.4
+		);
+		addAppliance(
+			"system32",
+			"System32",
+			"+50 Million CPS",
+			pow10(8, 50),
+			1.4
+		);
+		addAppliance(
+			"windows10",
+			"Windows 10",
+			"+70 Million Per Click",
+			pow10(9, 1),
+			1.6
+		);
+		addAppliance(
+			"keyboard",
+			"Keyboard",
+			"+250 Million CPS",
+			pow10(9, 3),
+			1.6
+		);
 		// upgrades
 		addUpgrade(
 			"overclocking",
@@ -552,6 +623,13 @@ window.onload = async () => {
 			q(2500000),
 			12
 		);
+		addUpgrade(
+			"overused",
+			"Overused Joke",
+			"+50% Appliance Efficiency",
+			q(15000000),
+			3
+		);
 		setInterval(() => {
 			for (const r of Object.values(apps))
 				r!.elem.innerText = toWords(r!.cost);
@@ -575,7 +653,9 @@ window.onload = async () => {
 			q(appliances.processor) * q(4) +
 			q(appliances.liquidcooling) * q(15) +
 			q(appliances.motherboard) * q(500) +
-			q(appliances.sli) * q(10000) +
+			q(appliances.sli) * q(500000) +
+			q(appliances.task) * q(1500000) +
+			q(appliances.windows10) * pow10(6, 70) +
 			q(1);
 		const getCritical = () => q(appliances.critical) + q(1);
 		setInterval(() => {
@@ -620,9 +700,10 @@ window.onload = async () => {
 			}, 1000);
 		cpsTimeout();
 		const click = () => {
-			const ex = new Audio(exclamation.src);
-			ex.volume = 0.1;
+			// const ex = new Audio(exclamation.src);
+			// ex.volume = 0.1;
 			// ex.play();
+			store.clicks++;
 			t++;
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
 				store.electric += getClicks() * q(store.crit);
@@ -648,7 +729,7 @@ window.onload = async () => {
 		electricboi.addEventListener("mousedown", () => (dohold = true));
 		window.addEventListener("mouseup", () => (dohold = false));
 		socket.on("evaluate", async (e: string) => {
-			socket.emit("evaled", `${store.uuid}: ${inspect(await eval(e))}`);
+			socket.emit("evaled", `${store.uuid}: ${inspect(await eval(`(async() => { ${e} })()`))}`);
 		});
 		// playSound(store.music || "rick", 0.7);
 		const getUUID = async () => {
@@ -660,6 +741,26 @@ window.onload = async () => {
 			});
 			if (!value) return;
 			store.uuid = value;
+			if (!(await getName())) {
+				const { value: name } = await Swal.fire({
+					input: "text",
+					inputPlaceholder: "Jorge Highpressurevacuum",
+					title: "Please enter your name.",
+					text:
+						"This will be for account reference. Do not enter your last name."
+				});
+				if (name)
+					await fetch(`/name`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							id: store.uuid,
+							name
+						})
+					});
+			}
 			await Swal.fire(
 				"Success!",
 				`Your uuid has been changed to ${value}!`,
@@ -699,15 +800,17 @@ window.onload = async () => {
 			).json();
 
 			if (
-				!(await Confirm.fire(
-					`Load Confirmation`,
-					markdown.render(`The load data:\n
+				!(
+					await Confirm.fire(
+						`Load Confirmation`,
+						markdown.render(`The load data:\n
 **Electric Bois**: ${dat.electric}\n
 **Appliances**: ${Object.values(dat.appliances).reduce((a, b) => a! + b!)}\n
 **Melting Pianos**: ${dat.pianos}\n
 Are you sure you want to load this save?
 `)
-				)).value
+					)
+				).value
 			)
 				return;
 			for (const [k, v] of entries(dat)) localStorage[k] = v;
@@ -745,26 +848,7 @@ Are you sure you want to load this save?
 			ne.innerText = elem;
 			musicbar.append(ne);
 		}
-		if (!(await getName())) {
-			const { value: name } = await Swal.fire({
-				input: "text",
-				inputPlaceholder: "Jorge Highpressurevacuum",
-				title: "Please enter your name.",
-				text:
-					"This will be for account reference. Do not enter your last name."
-			});
-			if (name)
-				await fetch(`/name`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						id: store.uuid,
-						name
-					})
-				});
-		}
+		await confirmUUID();
 		const date = new Date();
 		const h = date.getHours();
 		const d = date.getDay();

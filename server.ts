@@ -1,4 +1,6 @@
 //import Bundler from "parcel-bundler";
+import { BetterQuickDB } from "./db";
+const bdb = new BetterQuickDB();
 import express from "express";
 const { PORT = 1234 } = process.env;
 // const bundler = new Bundler(["index.html", "admin/index.html"]);
@@ -14,6 +16,7 @@ const password =
 // app.get("/admin", (req, res) => res.redirect("/admin/index.html"));
 let enabled = true;
 // app.use(bundler.middleware());
+const account = bdb.chain("accounts");
 if (!db.get("names")) db.set("names", {})
 app.use(express.json());
 io.on("connection", socket => {
@@ -42,7 +45,7 @@ let last: string[] = [];
 app.get("/socks", (req, res) => res.send(last));
 app.post("/account", (req, res) =>
 	typeof req.body.id === "string" && typeof req.body.content === "object"
-		? res.send(db.set(`accounts.${req.body.id}`, req.body.content))
+		? res.send(account.set(req.body.id, req.body.content))
 		: res.sendStatus(400)
 );
 
@@ -61,7 +64,7 @@ app.put("/account", (req, res) =>
 );
 app.get("/account", (req, res) =>
 	typeof req.query.id === "string"
-		? res.send(db.get(`accounts.${req.query.id}`))
+		? res.send(account.get(req.query.id))
 		: res.sendStatus(400)
 );
 app.use(express.static("./build"));
