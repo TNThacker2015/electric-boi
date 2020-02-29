@@ -15,6 +15,7 @@ const password =
 // app.get("/", (req, res) => res.redirect("/index.html"));
 // app.get("/admin", (req, res) => res.redirect("/admin/index.html"));
 let enabled = true;
+let passworded = true;
 // app.use(bundler.middleware());
 const account = bdb.chain("accounts");
 if (!db.get("names")) db.set("names", {})
@@ -25,14 +26,16 @@ io.on("connection", socket => {
 			io.emit(tt, t);
 		});
 	const allBoom = (t: string[]) => t.map(boomerang);
-	socket.on("turn", tff => {
-		const tf = JSON.parse(tff);
-		if (typeof tf !== "boolean") return;
-		enabled = tf;
+	socket.on("turn", (tff: boolean) => {
+		enabled = tff;
+	});
+	socket.on("passworded", (tff: boolean) => {
+		passworded = tff;
 	});
 	allBoom(["evaluate", "evaled"]);
 });
 app.get("/enabled", (req, res) => res.send(enabled));
+app.get("/passworded", (req, res) => res.send(passworded));
 app.get("/name", (req, res) => typeof req.query.id === "string" ? res.send(db.get(`names.${req.query.id}`)) : res.sendStatus(400))
 app.post("/name", (req, res) => typeof req.body.id === "string" && typeof req.body.name === "string" ? res.send(db.set(`names.${req.body.id}`, req.body.name)) : res.sendStatus(400))
 app.post("/password", (req, res) => {

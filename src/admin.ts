@@ -98,6 +98,22 @@ window.onload = async () => {
 			"success"
 		);
 	});
+	addButton("Enable Password", async () => {
+		socket.emit("passworded", true);
+		await Toast.fire(
+			"Turned On",
+			"Password is now turned on.",
+			"success"
+		);
+	});
+	addButton("Disable Password", async () => {
+		socket.emit("passworded", false);
+		await Toast.fire(
+			"Turned Off",
+			"Password is now turned off.",
+			"success"
+		);
+	});
 	addTitle("Other");
 	addButton("Eval", async () => {
 		const { value: text } = await Text.fire("Evaluate");

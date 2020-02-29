@@ -59,6 +59,7 @@ window.onload = async () => {
 		};
 
 		const enabled = JSON.parse(await (await fetch("/enabled")).text());
+		const passworded = JSON.parse(await (await fetch("/passworded")).text());
 		const socket = io();
 		const link = (document.querySelector("link[rel*='icon']") ||
 			document.createElement("link")) as HTMLLinkElement;
@@ -852,7 +853,7 @@ Are you sure you want to load this save?
 		const date = new Date();
 		const h = date.getHours();
 		const d = date.getDay();
-		if (h >= 9 && h <= 14 && d >= 1 && d <= 5) {
+		if (h >= 9 && h <= 14 && d >= 1 && d <= 5 && passworded) {
 			const all = [electricboi, upgrades, powerups];
 			all.map(x => (x.style.display = "none"));
 			const { value: pass } = await Swal.fire({
