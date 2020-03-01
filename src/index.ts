@@ -742,6 +742,13 @@ window.onload = async () => {
 			powM(Large.SEXTILLION, 15),
 			1.8
 		);
+		addAppliance(
+			"commandprompt",
+			"Command Prompt",
+			"+300 Quintillion Per Click",
+			powM(Large.SEXTILLION, 25),
+			1.3
+		);
 		type ApplianceNames = [
 			"computer",
 			"microchip",
@@ -780,6 +787,7 @@ window.onload = async () => {
 			"ereader",
 			"dataplan",
 			"internet",
+			"commandprompt",
 			// upgrades
 			"critical",
 			"overclocking",
@@ -805,6 +813,7 @@ window.onload = async () => {
 			q(appliances.bluetoothcard) * powM(Large.QUADRILLION, 25) +
 			q(appliances.usbadapter) * powM(Large.QUADRILLION, 205) +
 			q(appliances.ereader) * powM(Large.QUINTILLION, 20) +
+			q(appliances.commandprompt) * powM(Large.QUINTILLION, 300) +
 			q(1);
 		const getCPS = () => {
 			const e =
