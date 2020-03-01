@@ -21,7 +21,7 @@ const Confirm = Swal.mixin({
 	showConfirmButton: true,
 	showCancelButton: true,
 	cancelButtonText: "No",
-	confirmButtonText: "Yes"
+	confirmButtonText: "Yes",
 });
 localStorage.openpages = Date.now();
 window.addEventListener(
@@ -125,7 +125,7 @@ window.onload = async () => {
 		const defaults: Partial<Store> = {
 			electric: q(0),
 			pianos: q(0),
-			elecTotal: q(0)
+			elecTotal: q(0),
 		};
 		const store = new Proxy(Object.create(null) as Store, {
 			get(t, k: keyof Store) {
@@ -151,7 +151,7 @@ window.onload = async () => {
 					localStorage[k as any] = v;
 				}
 				return true;
-			}
+			},
 		});
 		const appliances = new Proxy(Object.create(null) as Appliances, {
 			get(t, k) {
@@ -162,7 +162,7 @@ window.onload = async () => {
 				app[k as keyof Appliances] = v;
 				store.appliances = app;
 				return true;
-			}
+			},
 		});
 		const electricboi = document.getElementById("eleboi");
 		const bois = document.getElementById("bois");
@@ -189,6 +189,7 @@ window.onload = async () => {
 		const load = document.getElementById("load");
 		const uuid = document.getElementById("uuid");
 		const stats = document.getElementById("stats");
+		const idleMax = document.getElementById("idleMax");
 		if (
 			!(
 				electricboi &&
@@ -211,7 +212,8 @@ window.onload = async () => {
 				save &&
 				load &&
 				uuid &&
-				stats
+				stats &&
+				idleMax
 			)
 		)
 			return console.log("not foudn");
@@ -231,6 +233,9 @@ window.onload = async () => {
 			elecTotal: bigint;
 			lastOpen: number;
 			rushEnd: number;
+			lastOnline: number;
+			onlineTime: number;
+			idleMax: number;
 		}
 
 		if (!store.appliances) store.appliances = {};
@@ -244,6 +249,10 @@ window.onload = async () => {
 		if (!store.rushEnd) store.rushEnd = 0;
 		if (!store.clicks) store.clicks = 0;
 		if (!store.lastOpen) store.lastOpen = Date.now();
+		if (!store.lastOnline) store.lastOnline = Date.now();
+		if (!store.onlineTime) store.onlineTime = 0;
+		if (!store.idleMax) store.idleMax = 3600000;
+		setInterval(() => (store.onlineTime += 100), 100);
 		const setUUID = () =>
 			(store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
@@ -262,7 +271,7 @@ window.onload = async () => {
 					(app[k as keyof ApplianceCosts] as any) = Number(v);
 					store.applianceCosts = app;
 					return true;
-				}
+				},
 			}
 		);
 		const getIncrease = () =>
@@ -376,7 +385,7 @@ window.onload = async () => {
 				elem: c,
 				countElem: r,
 				appElem: app,
-				buyElem: buy
+				buyElem: buy,
 			};
 		};
 		const statFuncs: (() => unknown)[] = [];
@@ -428,9 +437,10 @@ window.onload = async () => {
 				<b>Ideas By</b>: James - Div 8
 					<br>
 					<b>Beta Tester</b>: <span style="color:#F0A">William</span> - Div 3`,
-				allowOutsideClick: false
+				allowOutsideClick: false,
 			});
 		});
+
 		const autohold = (ms: number) => () =>
 			store.holdEnd < Date.now()
 				? (store.holdEnd = Date.now() + ms)
@@ -482,7 +492,8 @@ window.onload = async () => {
 				onclick
 			);
 		addStats("Total Electric Bois", () => toWords(store.elecTotal));
-		addStats("Clicks", () => store.clicks);
+		addStats("Clicks", () => toWords(q(store.clicks)));
+		addStats("Time Online", () => pms(store.onlineTime));
 		const pow10 = (n: number, mul = 1) => q(10) ** q(n) * q(mul);
 		const powM = (n: number, mul = 1) => q(10) ** q(n * 3) * q(mul);
 		const enum Large {
@@ -505,7 +516,7 @@ window.onload = async () => {
 			SEPTEMDECILLION,
 			OCTODECILLION,
 			NOVEMDECILLION,
-			VIGINTILLION
+			VIGINTILLION,
 		}
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
@@ -698,7 +709,8 @@ window.onload = async () => {
 			"quantumprocessor",
 			"watermelon",
 			"piano",
-			"overused"
+			"overused",
+			"batterylife",
 		];
 		const getClicks = () =>
 			q(appliances.microchip) +
@@ -758,6 +770,14 @@ window.onload = async () => {
 			11
 		);
 		addUpgrade(
+			"batterylife",
+			"Battery Life",
+			"+30 Minutes Maximum Idle Time",
+			powM(Large.MILLION, 2),
+			7.5,
+			() => store.idleMax += 1800000
+		);
+		addUpgrade(
 			"watermelon",
 			"Watermelon",
 			"+10% Appliance Efficiency",
@@ -800,19 +820,21 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
-			counter.innerHTML = `${
-				store.holdEnd > Date.now()
-					? `<b>Hold To Click</b>: ${pms(
-							store.holdEnd - Date.now()
-					  )} left<br>`
-					: ""
-			}${
-				store.rushEnd > Date.now()
-					? `<b>Power Rush</b>: ${pms(
-							store.rushEnd - Date.now()
-					  )} left\n`
-					: ""
-			}` || "No Effects Applied";
+			idleMax.innerText = pms(store.idleMax, { verbose: true, unitCount: 2 })
+			counter.innerHTML =
+				`${
+					store.holdEnd > Date.now()
+						? `<b>Hold To Click</b>: ${pms(
+								store.holdEnd - Date.now()
+						  )} left<br>`
+						: ""
+				}${
+					store.rushEnd > Date.now()
+						? `<b>Power Rush</b>: ${pms(
+								store.rushEnd - Date.now()
+						  )} left\n`
+						: ""
+				}` || "No Effects Applied";
 		});
 		setInterval(() => (uuid.innerText = store.uuid), 5000);
 		setInterval(() => {
@@ -889,7 +911,7 @@ window.onload = async () => {
 				title: "Enter your UUID.",
 				input: "text",
 				inputPlaceholder: "UUID",
-				showCancelButton: true
+				showCancelButton: true,
 			});
 			if (!value) return;
 			store.uuid = value;
@@ -899,18 +921,18 @@ window.onload = async () => {
 					inputPlaceholder: "Jorge Highpressurevacuum",
 					title: "Please enter your name.",
 					text:
-						"This will be for account reference. Do not enter your last name."
+						"This will be for account reference. Do not enter your last name.",
 				});
 				if (name)
 					await fetch(`/name`, {
 						method: "POST",
 						headers: {
-							"Content-Type": "application/json"
+							"Content-Type": "application/json",
 						},
 						body: JSON.stringify({
 							id: store.uuid,
-							name
-						})
+							name,
+						}),
 					});
 			}
 			await Swal.fire(
@@ -978,11 +1000,11 @@ Are you sure you want to load this save?
 				method: "POST",
 				body: JSON.stringify({
 					content: localStorage,
-					id: store.uuid
+					id: store.uuid,
 				}),
 				headers: {
-					"Content-Type": "application/json"
-				}
+					"Content-Type": "application/json",
+				},
 			});
 			if (r.ok)
 				await Swal.fire(
@@ -1000,7 +1022,6 @@ Are you sure you want to load this save?
 			ne.innerText = elem;
 			musicbar.append(ne);
 		}
-		await confirmUUID();
 		const date = new Date();
 		const h = date.getHours();
 		const d = date.getDay();
@@ -1014,7 +1035,7 @@ Are you sure you want to load this save?
 				input: "password",
 				allowOutsideClick: false,
 				inputValue: "",
-				icon: "info"
+				icon: "info",
 			});
 			if (pass !== "james is pass")
 				return await Swal.fire({
@@ -1023,7 +1044,7 @@ Are you sure you want to load this save?
 						"Incorrect password.<br />Do your work now; stop playing games.",
 					icon: "error",
 					allowOutsideClick: false,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			else {
 				all.map(x => (x.style.display = ""));
@@ -1032,16 +1053,44 @@ Are you sure you want to load this save?
 					text: "Password was correct.",
 					title: "Access Granted.",
 					position: "bottom",
-					icon: "success"
+					icon: "success",
 				});
 			}
 		}
+		await confirmUUID();
 		const now = Date.now();
 		if (now > store.lastOpen + 64800000) {
 			if (now - (store.lastOpen + 64800000) < 64800000) {
 				store.lastOpen = Date.now();
 			}
 		}
+		const timeDiff = Date.now() - store.lastOnline;
+		const added =
+			(q(Math.min(timeDiff, store.idleMax)) / q(1000)) * getCPS();
+		const pmsSettings = { verbose: true, unitCount: 2 };
+
+		await Swal.fire(
+			"Idle Collection",
+			`You collected ${toWords(
+				added
+			)} electric bois while you were away!\n ${
+				timeDiff > store.idleMax
+					? `You lost ${pms(
+							timeDiff - store.idleMax,
+							pmsSettings
+					  )} (${toWords(
+							(q(timeDiff - store.idleMax) * getCPS()) / q(1000)
+					  )} electric bois), because your offline time surpassed your maximum idle time. Please consider \
+upgrading your maximum idle time.\n `
+					: ""
+			}Your current maximum idle time is ${pms(
+				store.idleMax,
+				pmsSettings
+			)}. You were offline for ${pms(timeDiff, pmsSettings)}.`,
+			"success"
+		);
+		store.electric += added;
+		setInterval(() => (store.lastOnline = Date.now()));
 	} catch (err) {
 		console.error(err);
 	}

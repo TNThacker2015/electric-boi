@@ -17,11 +17,13 @@
 		filter: brightness(100%) contrast(250%);
 	}
 }
+
 .rush {
 	filter: brightness(360%) contrast(350%);
 	border: red 5px solid;
 	outline: yellow 5px solid;
 }
+
 #ele {
 	font-size: 2em;
 	font-weight: 900;
@@ -121,26 +123,33 @@ img {
 		background-color: #999;
 	}
 }
+
 #save {
 	@extend #credits;
 	background-color: #ff9;
+
 	&:hover {
 		background-color: #bb9;
 	}
+
 	&:active {
 		background-color: #885;
 	}
 }
+
 #load {
 	@extend #save;
 	background-color: #bbf;
+
 	&:hover {
 		background-color: #99f;
 	}
+
 	&:active {
 		background-color: #77a;
 	}
 }
+
 #upgrades {
 	@extend #curvy;
 	border: black 5px solid;
@@ -251,12 +260,15 @@ img {
 	top: 460px;
 	background-image: linear-gradient(#d66, #633);
 }
+
 #stats {
 	@extend #upgrades;
 	background-image: linear-gradient(#eee, #777);
+
 	.stat {
 		font-size: 1.7em;
 		font-weight: 800;
+
 		span {
 			font-weight: normal;
 		}
@@ -317,6 +329,16 @@ img {
 	#boost {
 		&::after {
 			content: " Appliance Boost Percentage";
+			font-weight: normal;
+		}
+
+		font-weight: 900;
+		cursor: help;
+	}
+
+	#idleMax {
+		&::before {
+			content: "Maximum Idle Time: ";
 			font-weight: normal;
 		}
 
@@ -456,10 +478,12 @@ b,
 strong {
 	font-weight: 800;
 }
+
 #uuid {
 	&:before {
 		content: "UUID: ";
 		font-weight: normal;
 	}
+
 	font-weight: bolder;
 }
