@@ -1,5 +1,10 @@
-import { toWords } from "./words";
+
 import Swal from "sweetalert2";
+if (typeof BigInt === "undefined" || typeof Promise === "undefined") {
+	Swal.fire("Outdated Browser", "Your browser needs to be updated. Safari is not supported.", "error");
+	throw new Error("Browser too old");
+}
+import { toWords } from "./words";
 import env from "./env.json";
 import io from "socket.io-client";
 import { inspect } from "util";
@@ -672,7 +677,70 @@ window.onload = async () => {
 			"Laser Printer",
 			"+100 Trillion CPS",
 			powM(Large.TRILLION, 850),
-			1.6
+			1.4
+		);
+		addAppliance(
+			"powersupply",
+			"Power Supply Unit",
+			"+5 Quadrillion CPS",
+			powM(Large.QUADRILLION, 5),
+			1.4
+		);
+		addAppliance(
+			"soundcard",
+			"Sound Card",
+			"+1 Quadrillion Per Click",
+			powM(Large.QUADRILLION, 10),
+			1.5
+		);
+		addAppliance(
+			"networkcard",
+			"Network Card",
+			"+50 Quadrillion CPS",
+			powM(Large.QUADRILLION, 250),
+			1.4
+		);
+		addAppliance(
+			"bluetoothcard",
+			"Bluetooth Card",
+			"+25 Quadrillion Per Click",
+			powM(Large.QUADRILLION, 725),
+			1.4
+		);
+		addAppliance(
+			"usbadapter",
+			"USB Adapter",
+			"+205 Quadrillion Per Click",
+			powM(Large.QUINTILLION, 5),
+			1.8
+		);
+		addAppliance(
+			"acadapter",
+			"AC Adapter",
+			"+2 Quintillion CPS",
+			powM(Large.QUINTILLION, 105),
+			1.4
+		);
+		addAppliance(
+			"ereader",
+			"E-Reader",
+			"+20 Quintillion Per Click",
+			powM(Large.QUINTILLION, 705),
+			1.2
+		);
+		addAppliance(
+			"internet",
+			"Internet",
+			"+100 Quintillion CPS",
+			powM(Large.SEXTILLION, 1),
+			2
+		);
+		addAppliance(
+			"dataplan",
+			"Data Plan",
+			"+450 Quintillion CPS",
+			powM(Large.SEXTILLION, 15),
+			1.8
 		);
 		type ApplianceNames = [
 			"computer",
@@ -703,6 +771,15 @@ window.onload = async () => {
 			"printer",
 			"laptop",
 			"laserprinter",
+			"powersupply",
+			"soundcard",
+			"networkcard",
+			"bluetoothcard",
+			"usbadapter",
+			"acadapter",
+			"ereader",
+			"dataplan",
+			"internet",
 			// upgrades
 			"critical",
 			"overclocking",
@@ -710,7 +787,7 @@ window.onload = async () => {
 			"watermelon",
 			"piano",
 			"overused",
-			"batterylife",
+			"batterylife"
 		];
 		const getClicks = () =>
 			q(appliances.microchip) +
@@ -724,6 +801,10 @@ window.onload = async () => {
 			q(appliances.software) * powM(Large.BILLION, 500) +
 			q(appliances.videocard) * powM(Large.TRILLION, 2) +
 			q(appliances.laptop) * powM(Large.TRILLION, 55) +
+			q(appliances.soundcard) * powM(Large.QUADRILLION, 1) +
+			q(appliances.bluetoothcard) * powM(Large.QUADRILLION, 25) +
+			q(appliances.usbadapter) * powM(Large.QUADRILLION, 205) +
+			q(appliances.ereader) * powM(Large.QUINTILLION, 20) +
 			q(1);
 		const getCPS = () => {
 			const e =
@@ -743,6 +824,11 @@ window.onload = async () => {
 				q(appliances.monitor) * powM(Large.TRILLION, 5) +
 				q(appliances.printer) * powM(Large.TRILLION, 20) +
 				q(appliances.laserprinter) * powM(Large.TRILLION, 100) +
+				q(appliances.powersupply) * powM(Large.QUADRILLION, 5) +
+				q(appliances.networkcard) * powM(Large.QUADRILLION, 50) +
+				q(appliances.acadapter) * powM(Large.QUINTILLION, 2) +
+				q(appliances.internet) * powM(Large.QUINTILLION, 100) +
+				q(appliances.dataplan) * powM(Large.QUINTILLION, 450) +
 				q(0);
 			return e + (e / q(100)) * getIncrease();
 		};
@@ -772,10 +858,10 @@ window.onload = async () => {
 		addUpgrade(
 			"batterylife",
 			"Battery Life",
-			"+30 Minutes Maximum Idle Time",
+			"+15 Minutes Maximum Idle Time",
 			powM(Large.MILLION, 2),
 			12.5,
-			() => store.idleMax += 1800000
+			() => (store.idleMax += 900000)
 		);
 		addUpgrade(
 			"watermelon",
@@ -789,7 +875,7 @@ window.onload = async () => {
 			"Overused Joke",
 			"+25% Appliance Efficiency",
 			q(15000000),
-			3
+			20
 		);
 		setInterval(() => {
 			for (const r of Object.values(apps))
@@ -820,7 +906,10 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
-			idleMax.innerText = pms(store.idleMax, { verbose: true, unitCount: 2 })
+			idleMax.innerText = pms(store.idleMax, {
+				verbose: true,
+				unitCount: 2,
+			});
 			counter.innerHTML =
 				`${
 					store.holdEnd > Date.now()
@@ -890,6 +979,7 @@ window.onload = async () => {
 			}
 		};
 		electricboi.addEventListener("click", click);
+		electricboi.addEventListener("contextmenu", click);
 		let dohold = false;
 		setInterval(
 			() => dohold && store.holdEnd > Date.now() && click(),
