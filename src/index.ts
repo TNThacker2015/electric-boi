@@ -774,7 +774,7 @@ window.onload = async () => {
 			"Battery Life",
 			"+30 Minutes Maximum Idle Time",
 			powM(Large.MILLION, 2),
-			7.5,
+			12.5,
 			() => store.idleMax += 1800000
 		);
 		addUpgrade(
