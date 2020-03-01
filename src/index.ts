@@ -226,6 +226,7 @@ window.onload = async () => {
 			holdEnd: number;
 			clicks: number;
 			elecTotal: bigint;
+			lastOpen: number;
 		}
 
 		if (!store.appliances) store.appliances = {};
@@ -237,6 +238,7 @@ window.onload = async () => {
 		if (!store.crit) store.crit = 10;
 		if (!store.holdEnd) store.holdEnd = 0;
 		if (!store.clicks) store.clicks = 0;
+		if (!store.lastOpen) store.lastOpen = Date.now();
 		const setUUID = () =>
 			(store.uuid = `${hrrs(5)}${Math.floor(Math.random() * 1000)
 				.toString()
@@ -262,7 +264,7 @@ window.onload = async () => {
 			q(appliances.overclocking) +
 			q(appliances.quantumprocessor * 5) +
 			q(appliances.watermelon * 10) +
-			q(appliances.overused * 50) +
+			q(appliances.overused * 25) +
 			q(0);
 		(window as any).loadIntervals = () => {
 			if (intervaled) return;
@@ -422,8 +424,11 @@ window.onload = async () => {
 			await Swal.fire({
 				title: "Credits",
 				html: `<b>Created and Tested by</b>: William, James, LJ - Div 8
+				<b>Developed By</b>: William - Div 8
+				<b>Tested By</b>: LJ - Div 8
+				<b>Ideas By</b>: James - Div 8
 					<br>
-					<b>Beta Testers</b>: <span style="color:#F0A">William</span> - Div 3`,
+					<b>Beta Tester</b>: <span style="color:#F0A">William</span> - Div 3`,
 				allowOutsideClick: false
 			});
 		});
@@ -473,47 +478,29 @@ window.onload = async () => {
 		addStats("Total Electric Bois", () => toWords(store.elecTotal));
 		addStats("Clicks", () => store.clicks);
 		const pow10 = (n: number, mul = 1) => q(10) ** q(n) * q(mul);
-		const getCPS = () => {
-			const e =
-				q(appliances.computer) +
-				q(appliances.supercomputer) * q(2) +
-				q(appliances.graphics) * q(10) +
-				q(appliances.cpu) * q(100) +
-				q(appliances.ram) * q(500) +
-				q(appliances.harddrive) * q(1000) +
-				q(appliances.ssd) * q(100000) +
-				q(appliances.swap) * q(1000000) +
-				q(appliances.system32) * pow10(6, 50) +
-				q(appliances.keyboard) * pow10(6, 250) +
-				q(0);
-			return e + (e / q(100)) * getIncrease();
-		};
-		type ApplianceNames = [
-			"computer",
-			"microchip",
-			"supercomputer",
-			"processor",
-			"graphics",
-			"cpu",
-			"liquidcooling",
-			"ram",
-			"harddrive",
-			"ssd",
-			"motherboard",
-			"sli",
-			"swap",
-			"task",
-			"system32",
-			"windows10",
-			"keyboard",
-			// upgrades
-			"critical",
-			"overclocking",
-			"quantumprocessor",
-			"watermelon",
-			"piano",
-			"overused",
-		];
+		const powM = (n: number, mul = 1) => q(10) ** q(n * 3) * q(mul);
+		const enum Large {
+			MILLION = 2,
+			BILLION,
+			TRILLION,
+			QUADRILLION,
+			QUINTILLION,
+			SEXTILLION,
+			SEPTILLION,
+			OCTILLION,
+			NONILLION,
+			DECILLION,
+			UNDECILLION,
+			DUODECILLION,
+			TREDECILLION,
+			QUATTORDECILLION,
+			QUINDECILLION,
+			SEXDECILLION,
+			SEPTEMDECILLION,
+			OCTODECILLION,
+			NOVEMDECILLION,
+			VIGINTILLION
+		}
 		type Appliances = {
 			[index in ApplianceNames[number]]: number;
 		};
@@ -584,16 +571,157 @@ window.onload = async () => {
 			"windows10",
 			"Windows 10",
 			"+70 Million Per Click",
-			pow10(9, 1),
+			powM(3, 1),
 			1.6
 		);
 		addAppliance(
 			"keyboard",
 			"Keyboard",
 			"+250 Million CPS",
-			pow10(9, 3),
+			powM(Large.BILLION, 3),
 			1.6
 		);
+		addAppliance(
+			"adblocker",
+			"AdBlocker",
+			"+5 Billion Per Click",
+			powM(Large.BILLION, 15),
+			1.4
+		);
+		addAppliance(
+			"recycle",
+			"Recycle Bin",
+			"+2 Billion CPS",
+			powM(Large.TRILLION, 1),
+			1.4
+		);
+		addAppliance(
+			"desktop",
+			"Desktop",
+			"+15 Billion CPS",
+			powM(Large.TRILLION, 10),
+			1.6
+		);
+		addAppliance(
+			"microprocessor",
+			"Microprocessor",
+			"+105 Billion CPS",
+			powM(Large.TRILLION, 50),
+			1.5
+		);
+		addAppliance(
+			"software",
+			"Software Update",
+			"+500 Billion Per Click",
+			powM(Large.TRILLION, 150),
+			1.4
+		);
+		addAppliance(
+			"monitor",
+			"Monitor",
+			"+5 Trillion CPS",
+			powM(Large.TRILLION, 200),
+			1.4
+		);
+		addAppliance(
+			"videocard",
+			"Video Card",
+			"+2 Trillion Per Click",
+			powM(Large.TRILLION, 250),
+			1.4
+		);
+		addAppliance(
+			"printer",
+			"Printer",
+			"+20 Trillion CPS",
+			powM(Large.TRILLION, 350),
+			1.6
+		);
+		addAppliance(
+			"laptop",
+			"Laptop",
+			"+55 Trillion Per Click",
+			powM(Large.TRILLION, 550),
+			1.6
+		);
+		addAppliance(
+			"laserprinter",
+			"Laser Printer",
+			"+100 Trillion CPS",
+			powM(Large.TRILLION, 850),
+			1.6
+		);
+		type ApplianceNames = [
+			"computer",
+			"microchip",
+			"supercomputer",
+			"processor",
+			"graphics",
+			"cpu",
+			"liquidcooling",
+			"ram",
+			"harddrive",
+			"ssd",
+			"motherboard",
+			"sli",
+			"swap",
+			"task",
+			"system32",
+			"windows10",
+			"keyboard",
+			"adblocker",
+			"recycle",
+			"desktop",
+			"desktop",
+			"microprocessor",
+			"software",
+			"monitor",
+			"videocard",
+			"printer",
+			"laptop",
+			"laserprinter",
+			// upgrades
+			"critical",
+			"overclocking",
+			"quantumprocessor",
+			"watermelon",
+			"piano",
+			"overused",
+		];
+		const getClicks = () =>
+			q(appliances.microchip) +
+			q(appliances.processor) * q(4) +
+			q(appliances.liquidcooling) * q(15) +
+			q(appliances.motherboard) * q(500) +
+			q(appliances.sli) * q(500000) +
+			q(appliances.task) * q(1500000) +
+			q(appliances.windows10) * pow10(6, 70) +
+			q(appliances.adblocker) * powM(Large.BILLION, 5) +
+			q(appliances.software) * powM(Large.BILLION, 500) +
+			q(appliances.videocard) * powM(Large.TRILLION, 2) +
+			q(appliances.laptop) * powM(Large.TRILLION, 55) +
+			q(1);
+		const getCPS = () => {
+			const e =
+				q(appliances.computer) +
+				q(appliances.supercomputer) * q(2) +
+				q(appliances.graphics) * q(10) +
+				q(appliances.cpu) * q(100) +
+				q(appliances.ram) * q(500) +
+				q(appliances.harddrive) * q(1000) +
+				q(appliances.ssd) * q(100000) +
+				q(appliances.swap) * q(1000000) +
+				q(appliances.system32) * powM(2, 50) +
+				q(appliances.keyboard) * powM(2, 250) +
+				q(appliances.recycle) * powM(Large.BILLION, 2) +
+				q(appliances.desktop) * powM(Large.BILLION, 15) +
+				q(appliances.microprocessor) * powM(Large.BILLION, 105) +
+				q(appliances.monitor) * powM(Large.TRILLION, 5) +
+				q(appliances.printer) * powM(Large.TRILLION, 20) +
+				q(appliances.laserprinter) * powM(Large.TRILLION, 100) +
+				q(0);
+			return e + (e / q(100)) * getIncrease();
+		};
 		// upgrades
 		addUpgrade(
 			"overclocking",
@@ -606,7 +734,7 @@ window.onload = async () => {
 		addUpgrade(
 			"piano",
 			"Electric Piano",
-			"+1 Melting Piano Gain",
+			"+1% Melting Piano Chance",
 			q(1000000),
 			15.5
 		);
@@ -627,7 +755,7 @@ window.onload = async () => {
 		addUpgrade(
 			"overused",
 			"Overused Joke",
-			"+50% Appliance Efficiency",
+			"+25% Appliance Efficiency",
 			q(15000000),
 			3
 		);
@@ -649,15 +777,6 @@ window.onload = async () => {
 				),
 			8000
 		);*/
-		const getClicks = () =>
-			q(appliances.microchip) +
-			q(appliances.processor) * q(4) +
-			q(appliances.liquidcooling) * q(15) +
-			q(appliances.motherboard) * q(500) +
-			q(appliances.sli) * q(500000) +
-			q(appliances.task) * q(1500000) +
-			q(appliances.windows10) * pow10(6, 70) +
-			q(1);
 		const getCritical = () => q(appliances.critical) + q(1);
 		setInterval(() => {
 			cps.innerText = toWords(getCPS());
@@ -714,8 +833,8 @@ window.onload = async () => {
 			} else {
 				store.electric += getClicks();
 			}
-			if (Math.floor(Math.random() * 100) < 3) {
-				store.pianos += q(appliances.piano + 1);
+			if (q(appliances.piano + 5) > q(Math.floor(Math.random() * 100))) {
+				store.pianos += q(1);
 				electricboi.style.filter =
 					"hue-rotate(90deg) saturate(2) brightness(6)";
 				setTimeout(() => (electricboi.style.filter = ""), 500);
@@ -885,7 +1004,13 @@ Are you sure you want to load this save?
 				});
 			}
 		}
-	} catch (err) {
+		const now = Date.now()
+		if (now > (store.lastOpen + 64800000)) {
+			if ((now - (store.lastOpen + 64800000)) < 64800000) {
+				store.lastOpen = Date.now();
+			}
+		}
+;	} catch (err) {
 		console.error(err);
 	}
 };
