@@ -432,47 +432,21 @@ window.onload = async () => {
 			});
 		});
 		const autohold = (ms: number) => () =>
-			store.holdEnd < Date.now() ? store.holdEnd = Date.now() + ms : store.holdEnd += ms;
-			const elecrush = (ms: number) => () =>
-				store.rushEnd < Date.now() ? store.rushEnd = Date.now() + ms : store.rushEnd += ms;
-			addPowerup("1 Minute Holding", "hold1min", 25, autohold(60000)); // #pow
-			addPowerup(
-				"5 Minute Holding",
-				"hold5min",
-				100,
-				autohold(60000 * 5)
-			);
-			addPowerup(
-				"15 Minute Holding",
-				"hold15min",
-				250,
-				autohold(60000 * 15)
-			);
-			addPowerup(
-				"35 Minute Holding",
-				"hold35min",
-				550,
-				autohold(60000 * 35)
-			);
-			addPowerup(
-				"1 Hour Holding",
-				"hold1hour",
-				1000,
-				autohold(60000 * 60)
-			);
-			addPowerup("30 Second Power Rush", "rush30sec", 30, elecrush(30000)); // #pow
-			addPowerup(
-				"1 Minute Power Rush",
-				"rush1min",
-				50,
-				elecrush(60000)
-			);
-			addPowerup(
-				"5 Minute Power Rush",
-				"rush5min",
-				225,
-				elecrush(60000 * 5)
-			);
+			store.holdEnd < Date.now()
+				? (store.holdEnd = Date.now() + ms)
+				: (store.holdEnd += ms);
+		const elecrush = (ms: number) => () =>
+			store.rushEnd < Date.now()
+				? (store.rushEnd = Date.now() + ms)
+				: (store.rushEnd += ms);
+		addPowerup("1 Minute Holding", "hold1min", 25, autohold(60000)); // #pow
+		addPowerup("5 Minute Holding", "hold5min", 100, autohold(60000 * 5));
+		addPowerup("15 Minute Holding", "hold15min", 250, autohold(60000 * 15));
+		addPowerup("35 Minute Holding", "hold35min", 550, autohold(60000 * 35));
+		addPowerup("1 Hour Holding", "hold1hour", 1000, autohold(60000 * 60));
+		addPowerup("30 Second Power Rush", "rush30sec", 30, elecrush(30000)); // #pow
+		addPowerup("1 Minute Power Rush", "rush1min", 50, elecrush(60000));
+		addPowerup("5 Minute Power Rush", "rush5min", 225, elecrush(60000 * 5));
 		const addAppliance = (
 			name: keyof Appliances,
 			display: string,
@@ -826,17 +800,19 @@ window.onload = async () => {
 			}x its normal amount!`;
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
-			counter.innerHTML =
-			store.holdEnd > Date.now()
-				? `<b>Hold To Click</b>: ${pms(
-						store.holdEnd - Date.now()
-				  )} left`
-				:
+			counter.innerHTML = `${
+				store.holdEnd > Date.now()
+					? `<b>Hold To Click</b>: ${pms(
+							store.holdEnd - Date.now()
+					  )} left<br>`
+					: ""
+			}${
 				store.rushEnd > Date.now()
 					? `<b>Power Rush</b>: ${pms(
 							store.rushEnd - Date.now()
-					  )} left`
-					: "No Effects Applied";
+					  )} left\n`
+					: ""
+			}` || "No Effects Applied";
 		});
 		setInterval(() => (uuid.innerText = store.uuid), 5000);
 		setInterval(() => {
@@ -870,8 +846,8 @@ window.onload = async () => {
 			t++;
 			const rush = store.rushEnd > Date.now();
 			const hold = store.holdEnd > Date.now();
-			const rushMul = (rush ? q(100) : q(1));
-			if (rush) electricboi.classList.add("rush")
+			const rushMul = rush ? q(100) : q(1);
+			if (rush) electricboi.classList.add("rush");
 			else electricboi.classList.remove("rush");
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
 				store.electric += getClicks() * q(store.crit) * rushMul;
@@ -881,7 +857,10 @@ window.onload = async () => {
 			} else {
 				store.electric += getClicks() * rushMul;
 			}
-			if ((!(rush || hold)) && q(appliances.piano + 5) > q(Math.floor(Math.random() * 100))) {
+			if (
+				!(rush || hold) &&
+				q(appliances.piano + 5) > q(Math.floor(Math.random() * 100))
+			) {
 				store.pianos += q(1);
 				electricboi.style.filter =
 					"hue-rotate(90deg) saturate(2) brightness(6)";
