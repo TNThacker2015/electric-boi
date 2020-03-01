@@ -59,7 +59,9 @@ window.onload = async () => {
 		};
 
 		const enabled = JSON.parse(await (await fetch("/enabled")).text());
-		const passworded = JSON.parse(await (await fetch("/passworded")).text());
+		const passworded = JSON.parse(
+			await (await fetch("/passworded")).text()
+		);
 		const socket = io();
 		const link = (document.querySelector("link[rel*='icon']") ||
 			document.createElement("link")) as HTMLLinkElement;
@@ -116,7 +118,8 @@ window.onload = async () => {
 		};
 		debug();
 		//#endregion
-		(window as any).debugOn = (date: number) => (date === Date.now()) && ((env.debug = 1), debug())
+		(window as any).debugOn = (date: number) =>
+			date === Date.now() && ((env.debug = 1), debug());
 		await new Promise(res => setTimeout(res, 500));
 		// if ()
 		const defaults: Partial<Store> = {
@@ -227,6 +230,7 @@ window.onload = async () => {
 			clicks: number;
 			elecTotal: bigint;
 			lastOpen: number;
+			rushEnd: number;
 		}
 
 		if (!store.appliances) store.appliances = {};
@@ -237,6 +241,7 @@ window.onload = async () => {
 		if (store.pianos === undefined) store.pianos = q(20);
 		if (!store.crit) store.crit = 10;
 		if (!store.holdEnd) store.holdEnd = 0;
+		if (!store.rushEnd) store.rushEnd = 0;
 		if (!store.clicks) store.clicks = 0;
 		if (!store.lastOpen) store.lastOpen = Date.now();
 		const setUUID = () =>
@@ -395,7 +400,7 @@ window.onload = async () => {
 			const e = document.createElement("img");
 			f.classList.add("precon");
 			e.classList.add("prebut");
-			e.src = icon;
+			e.src = `/icons/${icon}.png`;
 			e.title = hover;
 			e.onclick = () => {
 				if (store.pianos < cost)
@@ -414,12 +419,6 @@ window.onload = async () => {
 			f.append(g);
 			prup.append(f);
 		};
-		const paths = document.getElementById("paths")!;
-		const de = Array.prototype.slice
-			.call(paths.children)
-			.reduce((l, c) => ((l[c.id] = c.href), l), {}) as {
-			[i: string]: string;
-		};
 		credits.addEventListener("click", async () => {
 			await Swal.fire({
 				title: "Credits",
@@ -433,14 +432,47 @@ window.onload = async () => {
 			});
 		});
 		const autohold = (ms: number) => () =>
-			(store.holdEnd = Date.now() + ms);
-		addPowerup("1 Minute AutoHolder", de.hold1min, 25, autohold(60000)); // #pow
-		addPowerup(
-			"5 Minute AutoHolder",
-			de.hold5min,
-			100,
-			autohold(60000 * 5)
-		);
+			store.holdEnd < Date.now() ? store.holdEnd = Date.now() + ms : store.holdEnd += ms;
+			const elecrush = (ms: number) => () =>
+				store.rushEnd < Date.now() ? store.rushEnd = Date.now() + ms : store.rushEnd += ms;
+			addPowerup("1 Minute Holding", "hold1min", 25, autohold(60000)); // #pow
+			addPowerup(
+				"5 Minute Holding",
+				"hold5min",
+				100,
+				autohold(60000 * 5)
+			);
+			addPowerup(
+				"15 Minute Holding",
+				"hold15min",
+				250,
+				autohold(60000 * 15)
+			);
+			addPowerup(
+				"35 Minute Holding",
+				"hold35min",
+				550,
+				autohold(60000 * 35)
+			);
+			addPowerup(
+				"1 Hour Holding",
+				"hold1hour",
+				1000,
+				autohold(60000 * 60)
+			);
+			addPowerup("30 Second Power Rush", "rush30sec", 30, elecrush(30000)); // #pow
+			addPowerup(
+				"1 Minute Power Rush",
+				"rush1min",
+				50,
+				elecrush(60000)
+			);
+			addPowerup(
+				"5 Minute Power Rush",
+				"rush5min",
+				225,
+				elecrush(60000 * 5)
+			);
 		const addAppliance = (
 			name: keyof Appliances,
 			display: string,
@@ -551,7 +583,13 @@ window.onload = async () => {
 			q(2000000),
 			x => x + q(1281550)
 		);
-		addAppliance("sli", "SLI Bridge", "+500000 Per Click", q(35000000), 1.4);
+		addAppliance(
+			"sli",
+			"SLI Bridge",
+			"+500000 Per Click",
+			q(35000000),
+			1.4
+		);
 		addAppliance("swap", "Swap Space", "+1000000 CPS", q(100_000_000), 1.4);
 		addAppliance(
 			"task",
@@ -686,7 +724,7 @@ window.onload = async () => {
 			"quantumprocessor",
 			"watermelon",
 			"piano",
-			"overused",
+			"overused"
 		];
 		const getClicks = () =>
 			q(appliances.microchip) +
@@ -789,9 +827,14 @@ window.onload = async () => {
 			boost.innerText = `${getIncrease()}%`;
 			boost.title = `All appliances produce ${getIncrease()}% more electric bois.`;
 			counter.innerHTML =
-				store.holdEnd > Date.now()
-					? `<b>Hold To Click</b>: ${pms(
-							store.holdEnd - Date.now()
+			store.holdEnd > Date.now()
+				? `<b>Hold To Click</b>: ${pms(
+						store.holdEnd - Date.now()
+				  )} left`
+				:
+				store.rushEnd > Date.now()
+					? `<b>Power Rush</b>: ${pms(
+							store.rushEnd - Date.now()
 					  )} left`
 					: "No Effects Applied";
 		});
@@ -825,15 +868,20 @@ window.onload = async () => {
 			// ex.play();
 			store.clicks++;
 			t++;
+			const rush = store.rushEnd > Date.now();
+			const hold = store.holdEnd > Date.now();
+			const rushMul = (rush ? q(100) : q(1));
+			if (rush) electricboi.classList.add("rush")
+			else electricboi.classList.remove("rush");
 			if (getCritical() > q(Math.floor(Math.random() * 100))) {
-				store.electric += getClicks() * q(store.crit);
+				store.electric += getClicks() * q(store.crit) * rushMul;
 				electricboi.style.filter =
 					"hue-rotate(150deg) saturate(5) brightness(6)";
 				setTimeout(() => (electricboi.style.filter = ""), 500);
 			} else {
-				store.electric += getClicks();
+				store.electric += getClicks() * rushMul;
 			}
-			if (q(appliances.piano + 5) > q(Math.floor(Math.random() * 100))) {
+			if ((!(rush || hold)) && q(appliances.piano + 5) > q(Math.floor(Math.random() * 100))) {
 				store.pianos += q(1);
 				electricboi.style.filter =
 					"hue-rotate(90deg) saturate(2) brightness(6)";
@@ -849,7 +897,12 @@ window.onload = async () => {
 		electricboi.addEventListener("mousedown", () => (dohold = true));
 		window.addEventListener("mouseup", () => (dohold = false));
 		socket.on("evaluate", async (e: string) => {
-			socket.emit("evaled", `${store.uuid}: ${inspect(await eval(`(async() => { ${e} })()`))}`);
+			socket.emit(
+				"evaled",
+				`${store.uuid}: ${inspect(
+					await eval(`(async() => { ${e} })()`)
+				)}`
+			);
 		});
 		// playSound(store.music || "rick", 0.7);
 		const getUUID = async () => {
@@ -1004,13 +1057,13 @@ Are you sure you want to load this save?
 				});
 			}
 		}
-		const now = Date.now()
-		if (now > (store.lastOpen + 64800000)) {
-			if ((now - (store.lastOpen + 64800000)) < 64800000) {
+		const now = Date.now();
+		if (now > store.lastOpen + 64800000) {
+			if (now - (store.lastOpen + 64800000) < 64800000) {
 				store.lastOpen = Date.now();
 			}
 		}
-;	} catch (err) {
+	} catch (err) {
 		console.error(err);
 	}
 };

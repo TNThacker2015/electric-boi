@@ -17,11 +17,16 @@
 		filter: brightness(100%) contrast(250%);
 	}
 }
-
+.rush {
+	filter: brightness(360%) contrast(350%);
+	border: red 5px solid;
+	outline: yellow 5px solid;
+}
 #ele {
 	font-size: 2em;
 	font-weight: 900;
-	margin-top: 5px;
+	margin-top: 7px;
+	margin-bottom: 10px;
 }
 
 #contentright {
@@ -32,6 +37,7 @@
 
 #counter {
 	@extend #ele;
+	@extend #curvy;
 	margin-bottom: 2px;
 	text-align: center;
 	font-weight: normal;
@@ -57,10 +63,12 @@ img {
 }
 
 ::-webkit-scrollbar-track {
+	border-radius: 40px;
 	background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
+	border-radius: 40px;
 	background-color: #888;
 	transition: background-color 2s;
 }
@@ -89,6 +97,7 @@ img {
 
 #curvy {
 	border-radius: 15px;
+	// filter: drop-shadow(2px 3px 4px #111b);
 }
 
 #credits {
@@ -412,6 +421,7 @@ img {
 	padding: 4px;
 
 	.precon {
+		margin: 0px 2px;
 		width: fit-content;
 		font-size: 4px;
 		display: inline-block;
