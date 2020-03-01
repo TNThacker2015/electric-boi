@@ -46,6 +46,9 @@
 	background-image: linear-gradient(#88f, #66d);
 	padding: 4px;
 	border: black 4px solid;
+	position: sticky;
+	top: 7px;
+	z-index: 10;
 }
 
 img {
