@@ -59,7 +59,7 @@ img {
 :root {
 	font-family: "Nunito", Arial, Helvetica, sans-serif;
 	font-weight: 600;
-	background-image: linear-gradient(#00c1fc, #0047fc);
+	background-image: linear-gradient(#ddf, #0077fc);
 	touch-action: manipulation;
 }
 
@@ -97,8 +97,19 @@ img {
 	font-weight: 800;
 }
 
+summary {
+	cursor: pointer;
+	outline: none;
+	font-size: 1.4em;
+}
+
 #content {
 	margin-left: 20px;
+}
+
+#stonks {
+	image-rendering: pixelated;
+	width: 641px;
 }
 
 #curvy {

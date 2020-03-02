@@ -437,11 +437,14 @@ window.onload = async () => {
 			await Swal.fire({
 				title: "Credits",
 				html: `<b>Created and Tested by</b>: William, James, LJ - Div 8
+				<br>
 				<b>Developed By</b>: William - Div 8
+				<br>
 				<b>Tested By</b>: LJ - Div 8
-				<b>Ideas By</b>: James - Div 8
+				<br>
+				<b>Tested by and Ideas By</b>: James - Div 8
 					<br>
-					<b>Beta Tester</b>: <span style="color:#F0A">William</span> - Div 3`,
+					<b>Special Thanks</b>: <span style="color:#F0A">William</span> - Div 3`,
 				allowOutsideClick: false,
 			});
 		});
